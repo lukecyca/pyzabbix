@@ -38,7 +38,7 @@ from socket import gaierror
 from collections import deque
 
 default_log_handler = logging.StreamHandler(sys.stdout)
-__logger = logging.getLogger("zabbix_api")
+__logger = logging.getLogger("pyzabbix")
 __logger.addHandler(default_log_handler)
 __logger.log(10,"Starting logging")
 
@@ -143,8 +143,9 @@ class ZabbixAPI(object):
         self.id = 0
         self.r_query = deque([], maxlen = r_query_len)
         self.debug(logging.INFO, "url: "+ self.url)
+
     def _setuplogging(self):
-        self.logger = logging.getLogger("zabbix_api.%s" % self.__class__.__name__)
+        self.logger = logging.getLogger("pyzabbix.%s" % self.__class__.__name__)
 
     def set_log_level(self, level):
         self.debug(logging.INFO, "Set logging level to %d" % level)
@@ -155,6 +156,7 @@ class ZabbixAPI(object):
         return recent query
         """
         return list(self.r_query)
+
     def debug(self, level, var="", msg=None):
         strval = str(level) + ": "
         if msg:
@@ -213,13 +215,14 @@ class ZabbixAPI(object):
 
     def do_request(self, json_obj):
         headers = { 'Content-Type' : 'application/json-rpc',
-                    'User-Agent' : 'python/zabbix_api' }
+                    'User-Agent' : 'python/pyzabbix' }
 
         if self.httpuser:
             self.debug(logging.INFO,"HTTP Auth enabled")
             auth='Basic ' + string.strip(base64.encodestring(self.httpuser + ':' + self.httppasswd))
             headers['Authorization'] = auth
         self.r_query.append(str(json_obj))
+
         self.debug(logging.INFO, "Sending: " + str(json_obj))
         self.debug(logging.DEBUG, "Sending headers: " + str(headers))
 
@@ -310,11 +313,11 @@ def checkauth(fn):
 
 def dojson(name):
     def decorator(fn):
-        def wrapper(self,opts):
+        def wrapper(self, **kwargs):
             self.logger.log(logging.DEBUG, \
                     "Going to do_request for %s with opts %s" \
-                    %(repr(fn),repr(opts)))
-            return self.do_request(self.json_obj(name,opts))['result']
+                    %(repr(fn),repr(kwargs)))
+            return self.do_request(self.json_obj(name, kwargs))['result']
         return wrapper
     return decorator
 
@@ -1138,7 +1141,6 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
  * @return boolean
 """
         return opts
-
     @dojson('hostgroup.exists')
     @checkauth
     def exists(self,**opts):

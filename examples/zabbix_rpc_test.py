@@ -3,7 +3,7 @@ import optparse
 import sys
 import traceback
 from getpass import getpass
-from zabbix_api import ZabbixAPI, ZabbixAPIException
+from pyzabbix import ZabbixAPI, ZabbixAPIException
 
 def get_options():
     """ command-line options """
