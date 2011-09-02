@@ -1,16 +1,19 @@
-=PyZabbix=
+# PyZabbix #
 
 Python module to access the Zabbix API.
 
-==Notes==
+## Notes ##
 * The API requires zabbix 1.8 or later.
 * Currently, not all of the API is implemented, and some functionality is
 * broken. This is a work in progress.
 
-==License==
+## License ##
 LGPL 2.1   http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+
 Zabbix API Python Library.
+
 Original Ruby Library is Copyright (C) 2009 Andrew Nelson nelsonab(at)red-tux(dot)net
+
 Original Python Library is Copyright (C) 2009 Brett Lentz brett.lentz(at)gmail(dot)com
 
 This library is free software; you can redistribute it and/or
