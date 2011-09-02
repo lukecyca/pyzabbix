@@ -148,7 +148,7 @@ class ZabbixAPI(object):
         self.logger = logging.getLogger("pyzabbix.%s" % self.__class__.__name__)
 
     def set_log_level(self, level):
-        self.debug(logging.INFO, "Set logging level to %d" % level)
+        self.debug(logging.INFO, "Set logging level to %s" % level)
         self.logger.setLevel(level)
 
     def recent_query(self):
@@ -234,7 +234,7 @@ class ZabbixAPI(object):
             http_handler=urllib2.HTTPHandler(debuglevel=0)
             opener=urllib2.build_opener(http_handler)
         else:
-            raise ZabbixAPIException("Unknow protocol %s"%self.proto)
+            raise ZabbixAPIException("Unknown protocol %s"%self.proto)
 
         urllib2.install_opener(opener)
         response=opener.open(request, timeout = self.timeout)

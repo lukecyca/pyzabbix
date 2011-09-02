@@ -14,9 +14,10 @@ zapi.login(username, password)
 
 host_name="test_host"
 
-description='Used disk space on $1 in %' 
-key='vfs.fs.size[/,pused]'
-
-hostid=zapi.host.get({"filter":{"host":host_name}})[0]["hostid"]
+hostid=zapi.host.get(filter={"host":host_name})[0]["hostid"]
 print hostid
-zapi.item.create({ 'hostid' : (hostid),'description' : (description),'key_' : key })
+
+zapi.item.create(hostid=hostid,
+                 description='Used disk space on $1 in %' ,
+                 key_='vfs.fs.size[/,pused]',
+                 )

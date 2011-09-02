@@ -58,7 +58,7 @@ if  __name__ == "__main__":
         sys.stderr.write(str(e) + '\n')
 
     try:
-        for host in zapi.host.get({ 'monitored_hosts' : True,'extendoutput' : True}):
+        for host in zapi.host.get(monitored_hosts=True, extendoutput=True):
             if host['dns'] == "":
                 print "%s - %s - %s" % (host['host'], host['ip'], host['useip'])
             else:
@@ -68,7 +68,7 @@ if  __name__ == "__main__":
                 print "Updating %s to monitor by FQDN." % host['dns']
                 newhost = host
                 newhost['useip'] = 0
-                zapi.host.update(newhost)
+                zapi.host.update(**newhost)
 
     except ZabbixAPIException, e:
         sys.stderr.write(str(e) + '\n')
