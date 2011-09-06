@@ -37,19 +37,21 @@ import re
 from socket import gaierror
 from collections import deque
 
-default_log_handler = logging.StreamHandler(sys.stdout)
-__logger = logging.getLogger("pyzabbix")
-__logger.addHandler(default_log_handler)
-__logger.log(10,"Starting logging")
+class _NullHandler(logging.Handler):
+    def emit(self, record):
+        pass
+
+__logger = logging.getLogger(__name__)
+__logger.addHandler(_NullHandler())
 
 try:
     # Python 2.5+
     import json
-    __logger.log(15,"Using native json library")
+    __logger.log(logging.INFO,"Using native json library")
 except ImportError:
     # Python 2.4
     import simplejson as json
-    __logger.log(15,"Using simplejson library")
+    __logger.log(logging.INFO,"Using simplejson library")
 
 class ZabbixAPIException(Exception):
     """ generic zabbix api exception
@@ -147,6 +149,7 @@ class ZabbixAPI(object):
     def _setuplogging(self):
         self.logger = logging.getLogger("pyzabbix.%s" % self.__class__.__name__)
 
+    #TODO: Make class-level
     def set_log_level(self, level):
         self.debug(logging.INFO, "Set logging level to %s" % level)
         self.logger.setLevel(level)
@@ -157,6 +160,7 @@ class ZabbixAPI(object):
         """
         return list(self.r_query)
 
+    #TODO: Remove (and use logger.debug())
     def debug(self, level, var="", msg=None):
         strval = str(level) + ": "
         if msg:
