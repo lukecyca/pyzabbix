@@ -309,12 +309,15 @@ def checkauth(fn):
 
 def dojson(name):
     def decorator(fn):
-        def wrapper(self, **kwargs):
+        def wrapper(self, unnamed_array=None, **kwargs):
             self.logger.debug("Going to do_request for %s with opts %s",
                               repr(fn),
                               repr(kwargs),
                               )
-            return self.do_request(self.json_obj(name, kwargs))['result']
+            if not unnamed_array is None:
+                return self.do_request(self.json_obj(name, unnamed_array))['result']
+            else:
+                return self.do_request(self.json_obj(name, kwargs))['result']
         return wrapper
     return decorator
 
