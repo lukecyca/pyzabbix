@@ -32,7 +32,6 @@ import logging
 import string
 import sys
 import urllib2
-import json
 import re
 from socket import gaierror
 from collections import deque
@@ -45,13 +44,13 @@ __logger = logging.getLogger(__name__)
 __logger.addHandler(_NullHandler())
 
 try:
-    # Python 2.5+
-    import json
-    __logger.info("Using native json library")
-except ImportError:
-    # Python 2.4
+    # Separate module or Python <2.6
     import simplejson as json
     __logger.info("Using simplejson library")
+except ImportError:
+    # Python >=2.6
+    import json
+    __logger.info("Using native json library")
 
 class ZabbixAPIException(Exception):
     """ generic zabbix api exception
