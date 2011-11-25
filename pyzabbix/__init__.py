@@ -30,11 +30,9 @@ import base64
 import hashlib
 import logging
 import string
-import sys
 import urllib2
 import urlparse
 import re
-from socket import gaierror
 from collections import deque
 
 class _NullHandler(logging.Handler):
