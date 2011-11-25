@@ -32,6 +32,7 @@ import logging
 import string
 import sys
 import urllib2
+import urlparse
 import re
 from socket import gaierror
 from collections import deque
@@ -112,7 +113,7 @@ class ZabbixAPI(object):
 
         self.server=server
         self.url=server+'/api_jsonrpc.php'
-        self.proto=self.server.split("://")[0]
+        self.proto=urlparse.urlparse(server).scheme
         self.logger.info("url: %s", self.url)
 
         self.httpuser=user
