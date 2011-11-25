@@ -30,11 +30,9 @@ import base64
 import hashlib
 import logging
 import string
-import sys
 import urllib2
-import json
+import urlparse
 import re
-from socket import gaierror
 from collections import deque
 
 class _NullHandler(logging.Handler):
@@ -45,13 +43,13 @@ __logger = logging.getLogger(__name__)
 __logger.addHandler(_NullHandler())
 
 try:
-    # Python 2.5+
-    import json
-    __logger.info("Using native json library")
-except ImportError:
-    # Python 2.4
+    # Separate module or Python <2.6
     import simplejson as json
     __logger.info("Using simplejson library")
+except ImportError:
+    # Python >=2.6
+    import json
+    __logger.info("Using native json library")
 
 class ZabbixAPIException(Exception):
     """ generic zabbix api exception
@@ -113,7 +111,7 @@ class ZabbixAPI(object):
 
         self.server=server
         self.url=server+'/api_jsonrpc.php'
-        self.proto=self.server.split("://")[0]
+        self.proto=urlparse.urlparse(server).scheme
         self.logger.info("url: %s", self.url)
 
         self.httpuser=user
