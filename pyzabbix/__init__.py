@@ -307,15 +307,16 @@ def checkauth(fn):
 
 def dojson(name):
     def decorator(fn):
-        def wrapper(self, unnamed_array=None, **kwargs):
+        def wrapper(self, *args, **kwargs):
+            if args and kwargs:
+                raise TypeError("Found both args and kwargs")
+
+            arg = args or kwargs
             self.logger.debug("Going to do_request for %s with opts %s",
                               repr(fn),
-                              repr(kwargs),
+                              repr(arg),
                               )
-            if not unnamed_array is None:
-                return self.do_request(self.json_obj(name, unnamed_array))['result']
-            else:
-                return self.do_request(self.json_obj(name, kwargs))['result']
+            return self.do_request(self.json_obj(name, arg))['result']
         return wrapper
     return decorator
 
