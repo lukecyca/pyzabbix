@@ -390,9 +390,9 @@ class ZabbixAPIUser(ZabbixAPISubClass):
  * @return string|boolean """
         return opts
 
-    @dojson('user.add')
+    @dojson('user.create')
     @checkauth
-    def add(self,**opts):
+    def create(self,**opts):
         """  * Add Users
  *
  * {@source}
