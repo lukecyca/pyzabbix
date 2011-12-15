@@ -1,24 +1,25 @@
 # This is a port of the ruby zabbix api found here:
 # http://trac.red-tux.net/browser/ruby/api/zbx_api.rb
 #
-#LGPL 2.1   http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
-#Zabbix API Python Library.
-#Original Ruby Library is Copyright (C) 2009 Andrew Nelson nelsonab(at)red-tux(dot)net
-#Python Library is Copyright (C) 2009 Brett Lentz brett.lentz(at)gmail(dot)com
+# LGPL 2.1   http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+# Zabbix API Python Library.
+# Original Ruby Library is Copyright (C) 2009 Andrew Nelson
+# nelsonab(at)red-tux(dot)net
+# Python Library is Copyright (C) 2009 Brett Lentz brett.lentz(at)gmail(dot)com
 #
-#This library is free software; you can redistribute it and/or
-#modify it under the terms of the GNU Lesser General Public
-#License as published by the Free Software Foundation; either
-#version 2.1 of the License, or (at your option) any later version.
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 #
-#This library is distributed in the hope that it will be useful,
-#but WITHOUT ANY WARRANTY; without even the implied warranty of
-#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#Lesser General Public License for more details.
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-#You should have received a copy of the GNU Lesser General Public
-#License along with this library; if not, write to the Free Software
-#Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA
 
 
 # NOTES:
@@ -34,6 +35,7 @@ import urllib2
 import urlparse
 import re
 from collections import deque
+
 
 class _NullHandler(logging.Handler):
     def emit(self, record):
@@ -51,6 +53,7 @@ except ImportError:
     import json
     __logger.info("Using native json library")
 
+
 class ZabbixAPIException(Exception):
     """ generic zabbix api exception
     code list:
@@ -59,12 +62,15 @@ class ZabbixAPIException(Exception):
     """
     pass
 
+
 class Already_Exists(ZabbixAPIException):
     pass
+
 
 class InvalidProtoError(ZabbixAPIException):
     """ Recived an invalid proto """
     pass
+
 
 class ZabbixAPI(object):
     __username__ = ''
@@ -103,52 +109,52 @@ class ZabbixAPI(object):
     # passwd: HTTP auth password
     # r_query_len: max len query history
     # **kwargs: Data to pass to each api module
-    def __init__(self, server='http://localhost/zabbix', user=None, passwd=None,
-                 timeout = 10, r_query_len = 10, **kwargs):
+    def __init__(self, server='http://localhost/zabbix', user=None,
+            passwd=None, timeout=10, r_query_len=10, **kwargs):
         """ Create an API object.  """
 
         self._setuplogging()
 
-        self.server=server
-        self.url=server+'/api_jsonrpc.php'
-        self.proto=urlparse.urlparse(server).scheme
+        self.server = server
+        self.url = server + '/api_jsonrpc.php'
+        self.proto = urlparse.urlparse(server).scheme
         self.logger.info("url: %s", self.url)
 
-        self.httpuser=user
-        self.httppasswd=passwd
+        self.httpuser = user
+        self.httppasswd = passwd
         self.timeout = timeout
 
-        self.user = ZabbixAPIUser(self,**kwargs)
-        self.usergroup = ZabbixAPIUserGroup(self,**kwargs)
-        self.host = ZabbixAPIHost(self,**kwargs)
-        self.item = ZabbixAPIItem(self,**kwargs)
-        self.hostgroup = ZabbixAPIHostGroup(self,**kwargs)
-        self.application = ZabbixAPIApplication(self,**kwargs)
-        self.trigger = ZabbixAPITrigger(self,**kwargs)
-        self.sysmap = ZabbixAPISysMap(self,**kwargs)
-        self.template = ZabbixAPITemplate(self,**kwargs)
-        self.action = ZabbixAPIAction(self,**kwargs)
-        self.alert = ZabbixAPIAlert(self,**kwargs)
-        self.info = ZabbixAPIInfo(self,**kwargs)
-        self.event = ZabbixAPIEvent(self,**kwargs)
-        self.graph = ZabbixAPIGraph(self,**kwargs)
-        self.graphitem = ZabbixAPIGraphItem(self,**kwargs)
-        self.map = ZabbixAPIMap(self,**kwargs)
-        self.screen = ZabbixAPIScreen(self,**kwargs)
-        self.script = ZabbixAPIScript(self,**kwargs)
-        self.usermacro = ZabbixAPIUserMacro(self,**kwargs)
-        self.map = ZabbixAPIMap(self,**kwargs)
-        #self.map = ZabbixAPIMap(self,**kwargs)
-        self.drule = ZabbixAPIDRule(self,**kwargs)
-        self.history = ZabbixAPIHistory(self,**kwargs)
-        self.maintenance = ZabbixAPIMaintenance(self,**kwargs)
-        self.proxy = ZabbixAPIProxy(self,**kwargs)
+        self.user = ZabbixAPIUser(self, **kwargs)
+        self.usergroup = ZabbixAPIUserGroup(self, **kwargs)
+        self.host = ZabbixAPIHost(self, **kwargs)
+        self.item = ZabbixAPIItem(self, **kwargs)
+        self.hostgroup = ZabbixAPIHostGroup(self, **kwargs)
+        self.application = ZabbixAPIApplication(self, **kwargs)
+        self.trigger = ZabbixAPITrigger(self, **kwargs)
+        self.sysmap = ZabbixAPISysMap(self, **kwargs)
+        self.template = ZabbixAPITemplate(self, **kwargs)
+        self.action = ZabbixAPIAction(self, **kwargs)
+        self.alert = ZabbixAPIAlert(self, **kwargs)
+        self.info = ZabbixAPIInfo(self, **kwargs)
+        self.event = ZabbixAPIEvent(self, **kwargs)
+        self.graph = ZabbixAPIGraph(self, **kwargs)
+        self.graphitem = ZabbixAPIGraphItem(self, **kwargs)
+        self.map = ZabbixAPIMap(self, **kwargs)
+        self.screen = ZabbixAPIScreen(self, **kwargs)
+        self.script = ZabbixAPIScript(self, **kwargs)
+        self.usermacro = ZabbixAPIUserMacro(self, **kwargs)
+        self.map = ZabbixAPIMap(self, **kwargs)
+        #self.map = ZabbixAPIMap(self, **kwargs)
+        self.drule = ZabbixAPIDRule(self, **kwargs)
+        self.history = ZabbixAPIHistory(self, **kwargs)
+        self.maintenance = ZabbixAPIMaintenance(self, **kwargs)
+        self.proxy = ZabbixAPIProxy(self, **kwargs)
         self.id = 0
-        self.r_query = deque([], maxlen = r_query_len)
-
+        self.r_query = deque([], maxlen=r_query_len)
 
     def _setuplogging(self):
-        self.logger = logging.getLogger('{0}.{1}'.format(__name__, self.__class__.__name__))
+        self.logger = logging.getLogger('{0}.{1}'.format(__name__,
+            self.__class__.__name__))
 
     def set_log_level(self, level):
         self.logger.info("Set logging level to %s", level)
@@ -161,11 +167,12 @@ class ZabbixAPI(object):
         return list(self.r_query)
 
     def json_obj(self, method, params={}):
-        obj = { 'jsonrpc' : '2.0',
-                'method'  : method,
-                'params'  : params,
-                'auth'    : self.auth,
-                'id'      : self.id
+        obj = {
+                'jsonrpc': '2.0',
+                'method':  method,
+                'params':  params,
+                'auth':    self.auth,
+                'id':      self.id,
               }
 
         self.logger.debug("json_obj: %s", str(obj))
@@ -184,54 +191,58 @@ class ZabbixAPI(object):
             l_user = self.__username__
             l_password = self.__password__
         else:
-            raise ZabbixAPIException("No authentication information available.")
+            raise ZabbixAPIException("No authentication information available")
 
         # don't log the raw password.
         hashed_pw_string = "md5(" + hashlib.md5(l_password).hexdigest() + ")"
-        self.logger.debug("Trying to login with %s:%s", l_user, hashed_pw_string)
+        self.logger.debug("Trying to login with %s:%s", l_user,
+                hashed_pw_string)
 
-        obj = self.json_obj('user.authenticate', { 'user' : l_user,
-                'password' : l_password })
+        obj = self.json_obj('user.authenticate', {'user': l_user,
+                'password': l_password})
         result = self.do_request(obj)
         self.auth = result['result']
 
     def test_login(self):
         if self.auth != '':
-            obj = self.json_obj('user.checkAuthentication', {'sessionid' : self.auth})
+            obj = self.json_obj('user.checkAuthentication',
+                    {'sessionid': self.auth})
             result = self.do_request(obj)
 
             if not result['result']:
                 self.auth = ''
-                return False # auth hash bad
-            return True # auth hash good
+                return False  # auth hash bad
+
+            return True  # auth hash good
         else:
             return False
 
     def do_request(self, json_obj):
-        headers = { 'Content-Type' : 'application/json-rpc',
-                    'User-Agent' : 'python/pyzabbix' }
+        headers = {'Content-Type': 'application/json-rpc',
+                    'User-Agent': 'python/pyzabbix'}
 
         if self.httpuser:
             self.logger.debug("HTTP Auth enabled")
-            auth='Basic ' + string.strip(base64.encodestring(self.httpuser + ':' + self.httppasswd))
+            auth = 'Basic ' + string.strip(base64.encodestring(self.httpuser +
+                ':' + self.httppasswd))
             headers['Authorization'] = auth
         self.r_query.append(str(json_obj))
 
         self.logger.info("Sending: %s", str(json_obj))
         self.logger.debug("Sending headers: %s", str(headers))
 
-        request=urllib2.Request(url=self.url, data=json_obj,headers=headers)
-        if self.proto=="https":
-            https_handler=urllib2.HTTPSHandler(debuglevel=0)
-            opener=urllib2.build_opener(https_handler)
-        elif self.proto=="http":
-            http_handler=urllib2.HTTPHandler(debuglevel=0)
-            opener=urllib2.build_opener(http_handler)
+        request = urllib2.Request(url=self.url, data=json_obj, headers=headers)
+        if self.proto == "https":
+            https_handler = urllib2.HTTPSHandler(debuglevel=0)
+            opener = urllib2.build_opener(https_handler)
+        elif self.proto == "http":
+            http_handler = urllib2.HTTPHandler(debuglevel=0)
+            opener = urllib2.build_opener(http_handler)
         else:
-            raise ZabbixAPIException("Unknown protocol %s"%self.proto)
+            raise ZabbixAPIException("Unknown protocol %s" % self.proto)
 
         urllib2.install_opener(opener)
-        response=opener.open(request, timeout = self.timeout)
+        response = opener.open(request, timeout=self.timeout)
 
         self.logger.debug("Response Code: %s", str(response.code))
 
@@ -240,13 +251,13 @@ class ZabbixAPI(object):
         if response.code != 200:
             raise ZabbixAPIException("HTTP ERROR %s: %s"
                     % (response.status, response.reason))
-        reads=response.read()
+        reads = response.read()
 
-        if len(reads)==0:
+        if len(reads) == 0:
             raise ZabbixAPIException("Received zero answer")
         try:
             jobj = json.loads(reads)
-        except ValueError,msg:
+        except ValueError, msg:
             raise ZabbixAPIException("Unable to parse json: %s" % reads)
         self.logger.debug("Response Body: %s", str(jobj))
 
@@ -254,11 +265,12 @@ class ZabbixAPI(object):
 
         if 'error' in jobj:  # some exception
             msg = "Error %s: %s, %s while sending %s" % (jobj['error']['code'],
-                    jobj['error']['message'], jobj['error']['data'],str(json_obj))
-            if re.search(".*already\sexists.*",jobj["error"]["data"],re.I):  # already exists
-                raise Already_Exists(msg,jobj['error']['code'])
+                    jobj['error']['message'], jobj['error']['data'],
+                    str(json_obj))
+            if re.search(".*already\sexists.*", jobj["error"]["data"], re.I):
+                raise Already_Exists(msg, jobj['error']['code'])
             else:
-                raise ZabbixAPIException(msg,jobj['error']['code'])
+                raise ZabbixAPIException(msg, jobj['error']['code'])
         return jobj
 
     def logged_in(self):
@@ -274,6 +286,7 @@ class ZabbixAPI(object):
     def __checkauth__(self):
         if not self.logged_in():
             raise ZabbixAPIException("Not logged in.")
+
 
 class ZabbixAPISubClass(ZabbixAPI):
     """ wrapper class to ensure all calls go through the parent object """
@@ -298,12 +311,14 @@ class ZabbixAPISubClass(ZabbixAPI):
     def json_obj(self, method, param):
         return self.parent.json_obj(method, param)
 
+
 def checkauth(fn):
     """ Decorator to check authentication of the decorated method """
-    def ret(self,*args):
+    def ret(self, *args):
         self.__checkauth__()
-        return fn(self,args)
+        return fn(self, args)
     return ret
+
 
 def dojson(name):
     def decorator(fn):
@@ -320,19 +335,23 @@ def dojson(name):
         return wrapper
     return decorator
 
+
 class ZabbixAPIUser(ZabbixAPISubClass):
     @dojson('user.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Users data
  *
- * First part of parameters are filters which limits the output result set, these filters are set only if appropriate parameter is set.
- * For example if "type" is set, then method returns only users of given type.
- * Second part of parameters extends result data, adding data about others objects that are related to objects we get.
- * For example if "select_usrgrps" parameter is set, resulting objects will have additional property 'usrgrps' containing object with
- * data about User UserGroups.
- * Third part of parameters affect output. For example "sortfield" will be set to 'alias', result will be sorted by User alias.
- * All Parameters are optional!
+ * First part of parameters are filters which limits the output result set,
+ * these filters are set only if appropriate parameter is set.  For example if
+ * "type" is set, then method returns only users of given type.
+ * Second part of parameters extends result data, adding data about others
+ * objects that are related to objects we get.  For example if "select_usrgrps"
+ * parameter is set, resulting objects will have additional property 'usrgrps'
+ * containing object with data about User UserGroups.
+ * Third part of parameters affect output. For example "sortfield" will be set
+ * to 'alias', result will be sorted by User alias.  All Parameters are
+ * optional!
  *
  * {@source}
  * @access public
@@ -344,22 +363,28 @@ class ZabbixAPIUser(ZabbixAPISubClass):
  * @param array $options['nodeids'] filter by Node IDs
  * @param array $options['usrgrpids'] filter by UserGroup IDs
  * @param array $options['userids'] filter by User IDs
- * @param boolean $options['type'] filter by User type [ USER_TYPE_ZABBIX_USER: 1, USER_TYPE_ZABBIX_ADMIN: 2, USER_TYPE_SUPER_ADMIN: 3 ]
- * @param boolean $options['select_usrgrps'] extend with UserGroups data for each User
+ * @param boolean $options['type'] filter by User type [ USER_TYPE_ZABBIX_USER:
+ * 1, USER_TYPE_ZABBIX_ADMIN: 2, USER_TYPE_SUPER_ADMIN: 3 ]
+ * @param boolean $options['select_usrgrps'] extend with UserGroups data for
+ * each User
  * @param boolean $options['get_access'] extend with access data for each User
  * @param boolean $options['extendoutput'] output only User IDs if not set.
- * @param boolean $options['count'] output only count of objects in result. ( result returned in property 'rowscount' )
- * @param string $options['pattern'] filter by Host name containing only give pattern
+ * @param boolean $options['count'] output only count of objects in result. (
+ * result returned in property 'rowscount' )
+ * @param string $options['pattern'] filter by Host name containing only give
+ * pattern
  * @param int $options['limit'] output will be limited to given number
- * @param string $options['sortfield'] output will be sorted by given property [ 'userid', 'alias' ]
- * @param string $options['sortorder'] output will be sorted in given order [ 'ASC', 'DESC' ]
+ * @param string $options['sortfield'] output will be sorted by given property
+ * [ 'userid', 'alias' ]
+ * @param string $options['sortorder'] output will be sorted in given order [
+ * 'ASC', 'DESC' ]
  * @return array
         """
         return opts
 
     @dojson('user.checkAuthentication')
     @checkauth
-    def checkAuthentication(self,**opts):
+    def checkAuthentication(self, **opts):
         """  * Check if session ID is authenticated
  *
  * {@source}
@@ -376,7 +401,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get User ID by User alias
  *
  * {@source}
@@ -392,7 +417,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add Users
  *
  * {@source}
@@ -426,7 +451,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Users
  *
  * {@source}
@@ -460,7 +485,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.updateProfile')
     @checkauth
-    def updateProfile(self,**opts):
+    def updateProfile(self, **opts):
         """  * Update Users
  *
  * {@source}
@@ -494,7 +519,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Users
  *
  * {@source}
@@ -511,7 +536,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.addMedia')
     @checkauth
-    def addMedia(self,**opts):
+    def addMedia(self, **opts):
         """  * Add Medias for User
  *
  * {@source}
@@ -533,7 +558,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.deleteMedia')
     @checkauth
-    def deleteMedia(self,**opts):
+    def deleteMedia(self, **opts):
         """  * Delete User Medias
  *
  * {@source}
@@ -550,7 +575,7 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
     @dojson('user.updateMedia')
     @checkauth
-    def updateMedia(self,**opts):
+    def updateMedia(self, **opts):
         """  * Update Medias for User
  *
  * {@source}
@@ -572,11 +597,12 @@ class ZabbixAPIUser(ZabbixAPISubClass):
   """
         return opts
 
+
 class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Host data
  *
  * {@source}
@@ -595,11 +621,14 @@ class ZabbixAPIHost(ZabbixAPISubClass):
  * @param boolean $options['with_monitored_items'] only with monitored items
  * @param boolean $options['with_historical_items'] only with historical items
  * @param boolean $options['with_triggers'] only with triggers
- * @param boolean $options['with_monitored_triggers'] only with monitored triggers
+ * @param boolean $options['with_monitored_triggers'] only with monitored
+ * triggers
  * @param boolean $options['with_httptests'] only with http tests
- * @param boolean $options['with_monitored_httptests'] only with monitored http tests
+ * @param boolean $options['with_monitored_httptests'] only with monitored http
+ * tests
  * @param boolean $options['with_graphs'] only with graphs
- * @param boolean $options['editable'] only with read-write permission. Ignored for SuperAdmins
+ * @param boolean $options['editable'] only with read-write permission. Ignored
+ * for SuperAdmins
  * @param int $options['extendoutput'] return all fields for Hosts
  * @param boolean $options['select_groups'] select HostGroups
  * @param boolean $options['select_templates'] select Templates
@@ -611,7 +640,8 @@ class ZabbixAPIHost(ZabbixAPISubClass):
  * @param boolean $options['select_profile'] select Profile
  * @param int $options['count'] count Hosts, returned column name is rowscount
  * @param string $options['pattern'] search hosts by pattern in Host name
- * @param string $options['extend_pattern'] search hosts by pattern in Host name, ip and DNS
+ * @param string $options['extend_pattern'] search hosts by pattern in Host
+ * name, ip and DNS
  * @param int $options['limit'] limit selection
  * @param string $options['sortfield'] field to sort by
  * @param string $options['sortorder'] sort order
@@ -621,7 +651,7 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get Host ID by Host name
  *
  * {@source}
@@ -638,7 +668,7 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add Host
  *
  * {@source}
@@ -649,7 +679,8 @@ class ZabbixAPIHost(ZabbixAPISubClass):
  *
  * @param _array $hosts multidimensional array with Hosts data
  * @param string $hosts['host'] Host name.
- * @param array $hosts['groups'] array of HostGroup objects with IDs add Host to.
+ * @param array $hosts['groups'] array of HostGroup objects with IDs add Host
+ * to.
  * @param int $hosts['port'] Port. OPTIONAL
  * @param int $hosts['status'] Host Status. OPTIONAL
  * @param int $hosts['useip'] Use IP. OPTIONAL
@@ -669,7 +700,7 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Host
  *
  * {@source}
@@ -700,7 +731,7 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.massUpdate')
     @checkauth
-    def massUpdate(self,**opts):
+    def massUpdate(self, **opts):
         """  * Mass update hosts
  *
  * {@source}
@@ -722,7 +753,8 @@ class ZabbixAPIHost(ZabbixAPISubClass):
  * @param int $hosts['fields']['useipmi'] Use IPMI. OPTIONAL
  * @param string $hosts['fields']['ipmi_ip'] IPMAI IP. OPTIONAL
  * @param int $hosts['fields']['ipmi_port'] IPMI port. OPTIONAL
- * @param int $hosts['fields']['ipmi_authtype'] IPMI authentication type. OPTIONAL
+ * @param int $hosts['fields']['ipmi_authtype'] IPMI authentication type.
+ * OPTIONAL
  * @param int $hosts['fields']['ipmi_privilege'] IPMI privilege. OPTIONAL
  * @param string $hosts['fields']['ipmi_username'] IPMI username. OPTIONAL
  * @param string $hosts['fields']['ipmi_password'] IPMI password. OPTIONAL
@@ -732,7 +764,7 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.massAdd')
     @checkauth
-    def massAdd(self,**opts):
+    def massAdd(self, **opts):
         """  * Add Hosts to HostGroups. All Hosts are added to all HostGroups.
  *
  * {@source}
@@ -750,8 +782,9 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.massRemove')
     @checkauth
-    def massRemove(self,**opts):
-        """  * remove Hosts to HostGroups. All Hosts are added to all HostGroups.
+    def massRemove(self, **opts):
+        """  * remove Hosts to HostGroups. All Hosts are added to all
+        HostGroups.
  *
  * {@source}
  * @access public
@@ -768,7 +801,7 @@ class ZabbixAPIHost(ZabbixAPISubClass):
 
     @dojson('host.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Host
  *
  * {@source}
@@ -783,10 +816,11 @@ class ZabbixAPIHost(ZabbixAPISubClass):
   """
         return opts
 
+
 class ZabbixAPIItem(ZabbixAPISubClass):
     @dojson('item.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get items data
  *
  * {@source}
@@ -814,7 +848,7 @@ class ZabbixAPIItem(ZabbixAPISubClass):
 
     @dojson('item.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """      * Get itemid by host.name and item.key
      *
      * {@source}
@@ -832,7 +866,7 @@ class ZabbixAPIItem(ZabbixAPISubClass):
 
     @dojson('item.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """      * Create item
      *
      * {@source}
@@ -883,7 +917,7 @@ class ZabbixAPIItem(ZabbixAPISubClass):
 
     @dojson('item.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update item
  *
  * {@source}
@@ -899,7 +933,7 @@ class ZabbixAPIItem(ZabbixAPISubClass):
 
     @dojson('item.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete items
  *
  * {@source}
@@ -914,11 +948,12 @@ class ZabbixAPIItem(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIUserGroup(ZabbixAPISubClass):
 
     @dojson('usergroup.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get UserGroups
  *
  * {@source}
@@ -946,32 +981,32 @@ class ZabbixAPIUserGroup(ZabbixAPISubClass):
 
     @dojson('usergroup.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         return opts
 
     @dojson('usergroup.exists')
     @checkauth
-    def exists(self,**opts):
+    def exists(self, **opts):
         return opts
 
     @dojson('usergroup.massAdd')
     @checkauth
-    def massAdd(self,**opts):
+    def massAdd(self, **opts):
         return opts
 
     @dojson('usergroup.massRemove')
     @checkauth
-    def massRemove(self,**opts):
+    def massRemove(self, **opts):
         return opts
 
     @dojson('usergroup.massUpdate')
     @checkauth
-    def massUpdate(self,**opts):
+    def massUpdate(self, **opts):
         return opts
 
     @dojson('usergroup.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update UserGroups.
  *
  * {@source}
@@ -987,7 +1022,7 @@ class ZabbixAPIUserGroup(ZabbixAPISubClass):
 
     @dojson('usergroup.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete UserGroups.
  *
  * {@source}
@@ -1001,11 +1036,12 @@ class ZabbixAPIUserGroup(ZabbixAPISubClass):
  * @return boolean
 """
 
+
 class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get HostGroups
  *
  * {@source}
@@ -1020,7 +1056,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get HostGroup ID by name
  *
  * {@source}
@@ -1037,7 +1073,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add HostGroups
  *
  * {@source}
@@ -1053,7 +1089,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update HostGroup
  *
  * {@source}
@@ -1071,7 +1107,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete HostGroups
  *
  * {@source}
@@ -1087,7 +1123,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.massAdd')
     @checkauth
-    def massAdd(self,**opts):
+    def massAdd(self, **opts):
         """  * Add Hosts to HostGroups. All Hosts are added to all HostGroups.
  *
  * {@source}
@@ -1106,7 +1142,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.massRemove')
     @checkauth
-    def massRemove(self,**opts):
+    def massRemove(self, **opts):
         """  * Remove Hosts from HostGroups
  *
  * {@source}
@@ -1124,7 +1160,7 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
     @dojson('hostgroup.massUpdate')
     @checkauth
-    def massUpdate(self,**opts):
+    def massUpdate(self, **opts):
         """  * Update HostGroups with new Hosts (rewrite)
  *
  * {@source}
@@ -1140,9 +1176,10 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
  * @return boolean
 """
         return opts
+
     @dojson('hostgroup.exists')
     @checkauth
-    def exists(self,**opts):
+    def exists(self, **opts):
         """  * Check if HostGroups exists
  *
  * {@source}
@@ -1159,11 +1196,12 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIApplication(ZabbixAPISubClass):
 
     @dojson('application.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Applications data
  *
  * {@source}
@@ -1189,7 +1227,7 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 
     @dojson('application.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get Application ID by host.name and item.key
  *
  * {@source}
@@ -1207,7 +1245,7 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 
     @dojson('application.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add Applications
  *
  * {@source}
@@ -1224,7 +1262,7 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 
     @dojson('application.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Applications
  *
  * {@source}
@@ -1242,7 +1280,7 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 
     @dojson('application.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Applications
  *
  * {@source}
@@ -1258,7 +1296,7 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 
     @dojson('application.addItems')
     @checkauth
-    def addItems(self,**opts):
+    def addItems(self, **opts):
         """  * Add Items to applications
  *
  * {@source}
@@ -1274,11 +1312,12 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Triggers data
  *
  * {@source}
@@ -1306,7 +1345,7 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get triggerid by host.host and trigger.expression
  *
  * {@source}
@@ -1325,7 +1364,7 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add triggers
  *
  * {@source}
@@ -1349,7 +1388,7 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update triggers
  *
  * {@source}
@@ -1373,7 +1412,7 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete triggers
  *
  * {@source}
@@ -1390,7 +1429,7 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.addDependencies')
     @checkauth
-    def addDependencies(self,**opts):
+    def addDependencies(self, **opts):
         """  * Add dependency for trigger
  *
  * {@source}
@@ -1408,7 +1447,7 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
     @dojson('trigger.deleteDependencies')
     @checkauth
-    def deleteDependencies(self,**opts):
+    def deleteDependencies(self, **opts):
         """  * Delete trigger dependencis
  *
  * {@source}
@@ -1423,11 +1462,12 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Map data
  *
  * {@source}
@@ -1446,11 +1486,14 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
  * @param boolean $options['with_monitored_items'] only with monitored items
  * @param boolean $options['with_historical_items'] only with historical items
  * @param boolean $options['with_triggers'] only with triggers
- * @param boolean $options['with_monitored_triggers'] only with monitored triggers
+ * @param boolean $options['with_monitored_triggers'] only with monitored
+ * triggers
  * @param boolean $options['with_httptests'] only with http tests
- * @param boolean $options['with_monitored_httptests'] only with monitored http tests
+ * @param boolean $options['with_monitored_httptests'] only with monitored http
+ * tests
  * @param boolean $options['with_graphs'] only with graphs
- * @param boolean $options['editable'] only with read-write permission. Ignored for SuperAdmins
+ * @param boolean $options['editable'] only with read-write permission. Ignored
+ * for SuperAdmins
  * @param int $options['extendoutput'] return all fields for Hosts
  * @param int $options['count'] count Hosts, returned column name is rowscount
  * @param string $options['pattern'] search hosts by pattern in host names
@@ -1463,7 +1506,7 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * Add Map
  *
  * {@source}
@@ -1486,7 +1529,7 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Map
  *
  * {@source}
@@ -1509,7 +1552,7 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Map
  *
  * {@source}
@@ -1526,7 +1569,7 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.addLinks')
     @checkauth
-    def addLinks(self,**opts):
+    def addLinks(self, **opts):
         """  * addLinks Map
  *
  * {@source}
@@ -1547,7 +1590,7 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.addElements')
     @checkauth
-    def addElements(self,**opts):
+    def addElements(self, **opts):
         """  * Add Element to Sysmap
  *
  * {@source}
@@ -1573,7 +1616,7 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
     @dojson('map.addLinkTrigger')
     @checkauth
-    def addLinkTrigger(self,**opts):
+    def addLinkTrigger(self, **opts):
         """  * Add link trigger to link (Sysmap)
  *
  * {@source}
@@ -1589,11 +1632,12 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Template data
  *
  * {@source}
@@ -1610,7 +1654,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 #
 #    @dojson('template.getObjects')
 #    @checkauth
-#    def get(self,**opts):
+#    def get(self, **opts):
 #        """  * Get Template ID by Template name
 # *
 # * {@source}
@@ -1627,7 +1671,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add Template
  *
  * {@source}
@@ -1657,7 +1701,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Template
  *
  * {@source}
@@ -1673,7 +1717,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Template
  *
  * {@source}
@@ -1690,7 +1734,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.massUpdate')
     @checkauth
-    def massUpdate(self,**opts):
+    def massUpdate(self, **opts):
         """  * Mass update hosts
  *
  * {@source}
@@ -1712,7 +1756,8 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
  * @param int $hosts['fields']['useipmi'] Use IPMI. OPTIONAL
  * @param string $hosts['fields']['ipmi_ip'] IPMAI IP. OPTIONAL
  * @param int $hosts['fields']['ipmi_port'] IPMI port. OPTIONAL
- * @param int $hosts['fields']['ipmi_authtype'] IPMI authentication type. OPTIONAL
+ * @param int $hosts['fields']['ipmi_authtype'] IPMI authentication type.
+ * OPTIONAL
  * @param int $hosts['fields']['ipmi_privilege'] IPMI privilege. OPTIONAL
  * @param string $hosts['fields']['ipmi_username'] IPMI username. OPTIONAL
  * @param string $hosts['fields']['ipmi_password'] IPMI password. OPTIONAL
@@ -1722,7 +1767,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.massAdd')
     @checkauth
-    def massAdd(self,**opts):
+    def massAdd(self, **opts):
         """  * Link Template to Hosts
  *
  * {@source}
@@ -1742,8 +1787,9 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.massRemove')
     @checkauth
-    def massRemove(self,**opts):
-        """  * remove Hosts to HostGroups. All Hosts are added to all HostGroups.
+    def massRemove(self, **opts):
+        """  * remove Hosts to HostGroups. All Hosts are added to all
+        HostGroups.
  *
  * {@source}
  * @access public
@@ -1761,7 +1807,7 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 
     @dojson('template.linkTemplates')
     @checkauth
-    def linkTemplates(self,**opts):
+    def linkTemplates(self, **opts):
         """  * Link Host to Templates
  *
  * {@source}
@@ -1777,10 +1823,11 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIAction(ZabbixAPISubClass):
     @dojson('action.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Actions data
  *
  * {@source}
@@ -1809,7 +1856,7 @@ class ZabbixAPIAction(ZabbixAPISubClass):
 
     @dojson('action.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add actions
  *
  * {@source}
@@ -1832,7 +1879,7 @@ class ZabbixAPIAction(ZabbixAPISubClass):
 
     @dojson('action.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update actions
  *
  * {@source}
@@ -1856,7 +1903,7 @@ class ZabbixAPIAction(ZabbixAPISubClass):
 
     @dojson('action.addConditions')
     @checkauth
-    def addConditions(self,**opts):
+    def addConditions(self, **opts):
         """  * add conditions
  *
  * {@source}
@@ -1876,7 +1923,7 @@ class ZabbixAPIAction(ZabbixAPISubClass):
 
     @dojson('action.addOperations')
     @checkauth
-    def addOperations(self,**opts):
+    def addOperations(self, **opts):
         """  * add operations
  *
  * {@source}
@@ -1908,7 +1955,7 @@ class ZabbixAPIAction(ZabbixAPISubClass):
 
     @dojson('action.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete actions
  *
  * {@source}
@@ -1923,10 +1970,11 @@ class ZabbixAPIAction(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIAlert(ZabbixAPISubClass):
     @dojson('alert.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Alerts data
  *
  * {@source}
@@ -1955,7 +2003,7 @@ class ZabbixAPIAlert(ZabbixAPISubClass):
 
     @dojson('alert.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * Add alerts
  *
  * {@source}
@@ -1978,7 +2026,7 @@ class ZabbixAPIAlert(ZabbixAPISubClass):
 
     @dojson('alert.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete alerts
  *
  * {@source}
@@ -1993,10 +2041,11 @@ class ZabbixAPIAlert(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIInfo(ZabbixAPISubClass):
     @dojson('apiinfo.version')
     @checkauth
-    def version(self,**opts):
+    def version(self, **opts):
         """  * Get API version
  *
  * {@source}
@@ -2009,10 +2058,11 @@ class ZabbixAPIInfo(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIEvent(ZabbixAPISubClass):
     @dojson('event.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get events data
  *
  * {@source}
@@ -2041,7 +2091,7 @@ class ZabbixAPIEvent(ZabbixAPISubClass):
 
     @dojson('event.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * Add events ( without alerts )
  *
  * {@source}
@@ -2063,7 +2113,7 @@ class ZabbixAPIEvent(ZabbixAPISubClass):
 
     @dojson('event.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete events by eventids
  *
  * {@source}
@@ -2080,7 +2130,7 @@ class ZabbixAPIEvent(ZabbixAPISubClass):
 
     @dojson('event.deleteByTriggerIDs')
     @checkauth
-    def deleteByTriggerIDs(self,**opts):
+    def deleteByTriggerIDs(self, **opts):
         """      * Delete events by triggerids
      *
      * {@source}
@@ -2096,7 +2146,7 @@ class ZabbixAPIEvent(ZabbixAPISubClass):
 
     @dojson('event.acknowledge')
     @checkauth
-    def acknowledge(self,**opts):
+    def acknowledge(self, **opts):
         """
         events
         eventids
@@ -2106,23 +2156,24 @@ class ZabbixAPIEvent(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIGraph(ZabbixAPISubClass):
     @dojson('graph.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """ * Get graph data
 *
 * <code>
 * $options = array(
-*    array 'graphids'                => array(graphid1, graphid2, ...),
-*    array 'itemids'                    => array(itemid1, itemid2, ...),
-*    array 'hostids'                    => array(hostid1, hostid2, ...),
+*    array 'graphids'              => array(graphid1, graphid2, ...),
+*    array 'itemids'               => array(itemid1, itemid2, ...),
+*    array 'hostids'               => array(hostid1, hostid2, ...),
 *    int 'type'                    => 'graph type, chart/pie'
-*    boolean 'templated_graphs'            => 'only templated graphs',
-*    int 'count'                    => 'count',
-*    string 'pattern'                => 'search hosts by pattern in graph names',
-*    integer 'limit'                    => 'limit selection',
-*    string 'order'                    => 'deprecated parameter (for now)'
+*    boolean 'templated_graphs'    => 'only templated graphs',
+*    int 'count'                   => 'count',
+*    string 'pattern'              => 'search hosts by pattern in graph names',
+*    integer 'limit'               => 'limit selection',
+*    string 'order'                => 'deprecated parameter (for now)'
 * );
 * </code>
 *
@@ -2134,7 +2185,7 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 
     @dojson('graph.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get graphid by graph name
  *
  * <code>
@@ -2151,7 +2202,7 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 
     @dojson('graph.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         """  * Add graph
  *
  * <code>
@@ -2183,7 +2234,7 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 
     @dojson('graph.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update graphs
  *
  * @static
@@ -2194,7 +2245,7 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 
     @dojson('graph.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete graphs
  *
  * @static
@@ -2206,7 +2257,7 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 
     @dojson('graph.addItems')
     @checkauth
-    def addItems(self,**opts):
+    def addItems(self, **opts):
         """  * Add items to graph
  *
  * <code>
@@ -2234,7 +2285,7 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 
     @dojson('graph.deleteItems')
     @checkauth
-    def deleteItems(self,**opts):
+    def deleteItems(self, **opts):
         """ /**
  * Delete graph items
  *
@@ -2245,10 +2296,11 @@ class ZabbixAPIGraph(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIGraphItem(ZabbixAPISubClass):
     @dojson('graphitem.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """ * Get GraphItems data
 *
 * @static
@@ -2259,7 +2311,7 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 
     @dojson('graphitem.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get graph items by graph id and graph item id
  *
  * @static
@@ -2272,7 +2324,7 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 
     @dojson('maintenance.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get maintenances data
  *
  * {@source}
@@ -2300,7 +2352,7 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 
     @dojson('maintenance.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get Maintenance ID by host.name and item.key
  *
  * {@source}
@@ -2318,7 +2370,7 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 
     @dojson('maintenance.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * Add maintenances
  *
  * {@source}
@@ -2336,7 +2388,7 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 
     @dojson('maintenance.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update maintenances
  *
  * {@source}
@@ -2354,7 +2406,7 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 
     @dojson('maintenance.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete maintenances
  *
  * {@source}
@@ -2369,10 +2421,11 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIMap(ZabbixAPISubClass):
     @dojson('map.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Map data
  *
  * {@source}
@@ -2391,11 +2444,14 @@ class ZabbixAPIMap(ZabbixAPISubClass):
  * @param boolean $options['with_monitored_items'] only with monitored items
  * @param boolean $options['with_historical_items'] only with historical items
  * @param boolean $options['with_triggers'] only with triggers
- * @param boolean $options['with_monitored_triggers'] only with monitored triggers
+ * @param boolean $options['with_monitored_triggers'] only with monitored
+ * triggers
  * @param boolean $options['with_httptests'] only with http tests
- * @param boolean $options['with_monitored_httptests'] only with monitored http tests
+ * @param boolean $options['with_monitored_httptests'] only with monitored http
+ * tests
  * @param boolean $options['with_graphs'] only with graphs
- * @param boolean $options['editable'] only with read-write permission. Ignored for SuperAdmins
+ * @param boolean $options['editable'] only with read-write permission. Ignored
+ * for SuperAdmins
  * @param int $options['extendoutput'] return all fields for Hosts
  * @param int $options['count'] count Hosts, returned column name is rowscount
  * @param string $options['pattern'] search hosts by pattern in host names
@@ -2408,7 +2464,7 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 
     @dojson('map.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * Add Map
  *
  * {@source}
@@ -2431,7 +2487,7 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 
     @dojson('update.')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Map
  *
  * {@source}
@@ -2454,7 +2510,7 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 
     @dojson('map.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Map
  *
  * {@source}
@@ -2471,7 +2527,7 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 
     @dojson('map.addLinks')
     @checkauth
-    def addLinks(self,**opts):
+    def addLinks(self, **opts):
         """  * addLinks Map
  *
  * {@source}
@@ -2492,7 +2548,7 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 
     @dojson('map.addElements')
     @checkauth
-    def addElements(self,**opts):
+    def addElements(self, **opts):
         """  * Add Element to Sysmap
  *
  * {@source}
@@ -2518,7 +2574,7 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 
     @dojson('map.addLinkTrigger')
     @checkauth
-    def addLinkTrigger(self,**opts):
+    def addLinkTrigger(self, **opts):
         """  * Add link trigger to link (Sysmap)
  *
  * {@source}
@@ -2534,10 +2590,11 @@ class ZabbixAPIMap(ZabbixAPISubClass):
 """
         return opts
 
+
 class ZabbixAPIScreen(ZabbixAPISubClass):
     @dojson('screen.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Screen data
  *
  * {@source}
@@ -2549,7 +2606,8 @@ class ZabbixAPIScreen(ZabbixAPISubClass):
  * @param _array $options
  * @param array $options['nodeids'] Node IDs
  * @param boolean $options['with_items'] only with items
- * @param boolean $options['editable'] only with read-write permission. Ignored for SuperAdmins
+ * @param boolean $options['editable'] only with read-write permission. Ignored
+ * for SuperAdmins
  * @param int $options['extendoutput'] return all fields for Hosts
  * @param int $options['count'] count Hosts, returned column name is rowscount
  * @param string $options['pattern'] search hosts by pattern in host names
@@ -2561,17 +2619,17 @@ class ZabbixAPIScreen(ZabbixAPISubClass):
 
     @dojson('screen.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         return opts
 
     @dojson('screen.exists')
     @checkauth
-    def exists(self,**opts):
+    def exists(self, **opts):
         return opts
 
     @dojson('screen.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Screen
  *
  * {@source}
@@ -2591,7 +2649,7 @@ class ZabbixAPIScreen(ZabbixAPISubClass):
 
     @dojson('screen.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Screen
  *
  * {@source}
@@ -2610,7 +2668,7 @@ class ZabbixAPIScreen(ZabbixAPISubClass):
 class ZabbixAPIScript(ZabbixAPISubClass):
     @dojson('script.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get Scripts data
  *
  * {@source}
@@ -2638,7 +2696,7 @@ class ZabbixAPIScript(ZabbixAPISubClass):
 
     @dojson('script.getObjects')
     @checkauth
-    def getObjects(self,**opts):
+    def getObjects(self, **opts):
         """  * Get Script ID by host.name and item.key
  *
  * {@source}
@@ -2656,7 +2714,7 @@ class ZabbixAPIScript(ZabbixAPISubClass):
 
     @dojson('script.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * Add Scripts
  *
  * {@source}
@@ -2674,7 +2732,7 @@ class ZabbixAPIScript(ZabbixAPISubClass):
 
     @dojson('script.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update Scripts
  *
  * {@source}
@@ -2692,7 +2750,7 @@ class ZabbixAPIScript(ZabbixAPISubClass):
 
     @dojson('script.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         """  * Delete Scripts
  *
  * {@source}
@@ -2709,21 +2767,21 @@ class ZabbixAPIScript(ZabbixAPISubClass):
 
     @dojson('script.execute')
     @checkauth
-    def execute(self,**opts):
+    def execute(self, **opts):
         """
 """
         return opts
 
     @dojson('script.getCommand')
     @checkauth
-    def getCommand(self,**opts):
+    def getCommand(self, **opts):
         """
 """
         return opts
 
     @dojson('script.getScriptsByHosts')
     @checkauth
-    def getScriptsByHosts(self,**opts):
+    def getScriptsByHosts(self, **opts):
         """
 """
         return opts
@@ -2732,17 +2790,19 @@ class ZabbixAPIScript(ZabbixAPISubClass):
 class ZabbixAPIDRule(ZabbixAPISubClass):
     @dojson('drule.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         return opts
+
     @dojson('drule.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         return opts
+
 
 class ZabbixAPIUserMacro(ZabbixAPISubClass):
     @dojson('usermacro.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         """  * Get UserMacros data
  *
  * {@source}
@@ -2761,13 +2821,17 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
  * @param boolean $options['with_monitored_items'] only with monitored items
  * @param boolean $options['with_historical_items'] only with historical items
  * @param boolean $options['with_triggers'] only with triggers
- * @param boolean $options['with_monitored_triggers'] only with monitored triggers
+ * @param boolean $options['with_monitored_triggers'] only with monitored
+ * triggers
  * @param boolean $options['with_httptests'] only with http tests
- * @param boolean $options['with_monitored_httptests'] only with monitored http tests
+ * @param boolean $options['with_monitored_httptests'] only with monitored http
+ * tests
  * @param boolean $options['with_graphs'] only with graphs
- * @param boolean $options['editable'] only with read-write permission. Ignored for SuperAdmins
+ * @param boolean $options['editable'] only with read-write permission. Ignored
+ * for SuperAdmins
  * @param int $options['extendoutput'] return all fields for UserMacros
- * @param int $options['count'] count UserMacros, returned column name is rowscount
+ * @param int $options['count'] count UserMacros, returned column name is
+ * rowscount
  * @param string $options['pattern'] search macros by pattern in macro names
  * @param int $options['limit'] limit selection
  * @param string $options['order'] deprecated parameter (for now)
@@ -2777,7 +2841,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.getHostMacroObjects')
     @checkauth
-    def getHostMacroObjects(self,**opts):
+    def getHostMacroObjects(self, **opts):
         """  * Gets all UserMacros data from DB by UserMacros ID
  *
  * {@source}
@@ -2794,7 +2858,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.add')
     @checkauth
-    def add(self,**opts):
+    def add(self, **opts):
         """  * add Host Macro
  *
  * {@source}
@@ -2813,7 +2877,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         """  * Update host macros, replace all with new ones
  *
  * {@source}
@@ -2832,7 +2896,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.updateValue')
     @checkauth
-    def updateValue(self,**opts):
+    def updateValue(self, **opts):
         """  * Update macros values
  *
  * {@source}
@@ -2851,7 +2915,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.deleteHostMacro')
     @checkauth
-    def deleteHostMacro(self,**opts):
+    def deleteHostMacro(self, **opts):
         """  * Delete UserMacros
  *
  * {@source}
@@ -2868,7 +2932,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.addGlobal')
     @checkauth
-    def addGlobal(self,**opts):
+    def addGlobal(self, **opts):
         """  * Add global macros
  *
  * {@source}
@@ -2887,7 +2951,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.deleteGlobalMacro')
     @checkauth
-    def deleteGlobalMacro(self,**opts):
+    def deleteGlobalMacro(self, **opts):
         """  * Delete UserMacros
  *
  * {@source}
@@ -2904,7 +2968,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.validate')
     @checkauth
-    def validate(self,**opts):
+    def validate(self, **opts):
         """  * Validates macros expression
  *
  * {@source}
@@ -2920,7 +2984,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.getGlobalMacroObjects')
     @checkauth
-    def getGlobalMacroObjects(self,**opts):
+    def getGlobalMacroObjects(self, **opts):
         """  * Gets all UserMacros data from DB by UserMacros ID
  *
  * {@source}
@@ -2937,7 +3001,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.getHostMacroId')
     @checkauth
-    def getHostMacroId(self,**opts):
+    def getHostMacroId(self, **opts):
         """  * Get UserMacros ID by UserMacros name
  *
  * {@source}
@@ -2955,7 +3019,7 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.getGlobalMacroId')
     @checkauth
-    def getGlobalMacroId(self,**opts):
+    def getGlobalMacroId(self, **opts):
         """  * Get UserMacros ID by UserMacros name
  *
  * {@source}
@@ -2972,60 +3036,67 @@ class ZabbixAPIUserMacro(ZabbixAPISubClass):
 
     @dojson('usermacro.getMacros')
     @checkauth
-    def getMacros(self,**opts):
+    def getMacros(self, **opts):
         """
 """
         return opts
 
     @dojson('usermacro.resolveTrigger')
     @checkauth
-    def resolveTrigger(self,**opts):
+    def resolveTrigger(self, **opts):
         """
 """
         return opts
 
     @dojson('usermacro.resolveItem')
     @checkauth
-    def resolveItem(self,**opts):
+    def resolveItem(self, **opts):
         """
 """
         return opts
 
+
 class ZabbixAPIHistory(ZabbixAPISubClass):
     @dojson('history.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         return opts
+
     @dojson('history.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         return opts
+
 
 class ZabbixAPIProxy(ZabbixAPISubClass):
     @dojson('proxy.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         return opts
+
 
 class ZabbixAPIMaintenance(ZabbixAPISubClass):
     @dojson('maintenance.create')
     @checkauth
-    def create(self,**opts):
+    def create(self, **opts):
         return opts
 
     @dojson('maintenance.delete')
     @checkauth
-    def delete(self,**opts):
+    def delete(self, **opts):
         return opts
+
     @dojson('maintenance.exists')
     @checkauth
-    def exists(self,**opts):
+    def exists(self, **opts):
         return opts
+
     @dojson('maintenance.get')
     @checkauth
-    def get(self,**opts):
+    def get(self, **opts):
         return opts
+
     @dojson('maintenance.update')
     @checkauth
-    def update(self,**opts):
+    def update(self, **opts):
         return opts
