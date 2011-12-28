@@ -1,56 +1,54 @@
-import sys
+"""
+Zabbix stores the DNS name and the IP for each host that it monitors, and
+uses one or the other to connect to the host.  It is good practice to make
+sure the IP and DNS name are both correct.  This script checks the DNS and
+IP for all hosts in Zabbix, compares the IP against an actual DNS lookup,
+and fixes it if required.
+"""
+
 import socket
 from getpass import getpass
-from pyzabbix import ZabbixAPI
+from pyzabbix import ZabbixAPI, ZabbixAPIException
 
 # The hostname at which the Zabbix web interface is available
-zabbix_server = 'http://localhost'
+ZABBIX_SERVER = 'https://zabbix.example.com'
 
+# Enter credentials for the Zabbix Web Frontend
+username = raw_input('Username: ')
+password = getpass()
 
-def update_host_ip(zapi,hostid,ip):
+# Connect to the Zabbix web frontend (using the same credentials for HTTPAUTH)
+zapi = ZabbixAPI(ZABBIX_SERVER, username, password)
+
+# Login to the Zabbix web frontend / API
+zapi.login(username, password)
+
+# Loop through all hosts
+for h in zapi.host.get(extendoutput=True):
+
+    # Make sure the hosts are named according to their FQDN
+    if h['dns'] != h['host']:
+        print 'Warning: %s has dns "%s"' % (h['host'], h['dns'])
+
+    # Make sure they are using hostnames to connect rather than IPs
+    if h['useip'] == '1':
+        print '%s is using IP instead of hostname. Skipping.' % h['host']
+        continue
+
+    # Do a DNS lookup for the host's DNS name
     try:
-        zapi.host.update(
-            hostid=hostid,
-            ip=ip
-            )
-    except zabbix_api2.ZabbixAPIException as e:
-        print e
+        lookup = socket.gethostbyaddr(h['dns'])
+    except socket.gaierror, e:
+        print h['dns'], e
+        continue
+    actual_ip = lookup[2][0]
 
+    # Check whether the looked-up IP matches the one stored in the host's IP field
+    if actual_ip != h['ip']:
+        print "%s has the wrong IP: %s. Changing it to: %s" % (h['host'], h['ip'], actual_ip)
 
-
-def main():
-
-    # Enter administrator credentials for the Zabbix Web Frontend
-    username = raw_input('Username: ')
-    password = getpass()
-
-    zapi = ZabbixAPI(zabbix_server, username, password)
-    zapi.login(username, password)
-    print "Connected to Zabbix API Version %s" % zapi.api_version()
-
-    for h in zapi.host.get(extendoutput=True):
-        # Make sure the hosts are named according to their FQDN
-        if h['dns'] != h['host']:
-            print '%s is actually connecting to %s.' % (h['host'],h['dns'])
-
-        # Make sure they are using hostnames to connect rather than IPs
-        if h['useip'] == '1':
-            print '%s is using IP instead of hostname. Skipping.' % h['host']
-            continue
-
-        # Set their IP record to match what the DNS system says it should be
+        # Set the host's IP field to match what the DNS lookup said it should be
         try:
-            lookup = socket.gethostbyaddr(h['dns'])
-        except socket.gaierror, e:
-            print h['dns'], e
-            continue
-        actual_ip = lookup[2][0]
-        if actual_ip != h['ip']:
-            print "%s has the wrong IP: %s. Changing it to: %s" % (h['host'], h['ip'], actual_ip)
-            update_host_ip(zapi,h['hostid'],actual_ip)
-
-
-
-
-if __name__ == "__main__":
-    main()
+            zapi.host.update(hostid=h['hostid'], ip=actual_ip)
+        except ZabbixAPIException as e:
+            print e

@@ -1,11 +1,10 @@
 # PyZabbix #
 
-Python module to access the Zabbix API.
+**PyZabbix** is a Python module for working with the [Zabbix API](http://www.zabbix.com/documentation/1.8/api).
 
-## Notes ##
-* The API requires zabbix 1.8 or later.
-* Currently, not all of the API is implemented, and some functionality is
-* broken. This is a work in progress.
+## Documentation
+
+See https://wiki.github.com/lukecyca/pyzabbix/
 
 ## License ##
 LGPL 2.1   http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
