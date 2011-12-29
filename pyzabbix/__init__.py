@@ -317,6 +317,7 @@ def checkauth(fn):
     def ret(self, *args):
         self.__checkauth__()
         return fn(self, args)
+    ret.__doc__ = fn.__doc__
     return ret
 
 
@@ -332,6 +333,7 @@ def dojson(name):
                               repr(arg),
                               )
             return self.do_request(self.json_obj(name, arg))['result']
+        wrapper.__doc__ = fn.__doc__
         return wrapper
     return decorator
 
