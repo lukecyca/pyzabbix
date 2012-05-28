@@ -204,7 +204,7 @@ class ZabbixAPI(object):
         # fallback to utf-8 encoding if chardet module is not available
         # and content-type HTTP header does not contain charset
         if response.text == None:
-            response.encoding('utf-8')
+            response.encoding = 'utf-8'
 
         if not len(response.text):
             raise ZabbixAPIException("Received zero answer")
