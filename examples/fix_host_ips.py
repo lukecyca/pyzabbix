@@ -13,42 +13,41 @@ from pyzabbix import ZabbixAPI, ZabbixAPIException
 # The hostname at which the Zabbix web interface is available
 ZABBIX_SERVER = 'https://zabbix.example.com'
 
-# Enter credentials for the Zabbix Web Frontend
-username = raw_input('Username: ')
-password = getpass()
+zapi = ZabbixAPI(ZABBIX_SERVER)
+zapi.set_http_auth('http_username', 'http_password')
 
-# Connect to the Zabbix web frontend (using the same credentials for HTTPAUTH)
-zapi = ZabbixAPI(ZABBIX_SERVER, username, password)
-
-# Login to the Zabbix web frontend / API
-zapi.login(username, password)
+# Login to the Zabbix API
+zapi.login('api_username', 'api_password')
 
 # Loop through all hosts
 for h in zapi.host.get(extendoutput=True):
-
     # Make sure the hosts are named according to their FQDN
     if h['dns'] != h['host']:
-        print 'Warning: %s has dns "%s"' % (h['host'], h['dns'])
+        print('Warning: %s has dns "%s"' % (h['host'], h['dns']))
 
     # Make sure they are using hostnames to connect rather than IPs
     if h['useip'] == '1':
-        print '%s is using IP instead of hostname. Skipping.' % h['host']
+        print('%s is using IP instead of hostname. Skipping.' % h['host'])
         continue
 
     # Do a DNS lookup for the host's DNS name
     try:
         lookup = socket.gethostbyaddr(h['dns'])
-    except socket.gaierror, e:
-        print h['dns'], e
+    except socket.gaierror as e:
+        print(h['dns'], e)
         continue
     actual_ip = lookup[2][0]
 
-    # Check whether the looked-up IP matches the one stored in the host's IP field
+    # Check whether the looked-up IP matches the one stored in the host's IP
+    # field
     if actual_ip != h['ip']:
-        print "%s has the wrong IP: %s. Changing it to: %s" % (h['host'], h['ip'], actual_ip)
+        print("%s has the wrong IP: %s. Changing it to: %s" % (h['host'],
+                                                               h['ip'],
+                                                               actual_ip))
 
-        # Set the host's IP field to match what the DNS lookup said it should be
+        # Set the host's IP field to match what the DNS lookup said it should
+        # be
         try:
             zapi.host.update(hostid=h['hostid'], ip=actual_ip)
         except ZabbixAPIException as e:
-            print e
+            print(e)
