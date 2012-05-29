@@ -27,14 +27,11 @@
 # Currently, not all of the API is implemented, and some functionality is
 # broken. This is a work in progress.
 
-import base64
-import hashlib
 import logging
-import string
-import urllib2
-import urlparse
 import re
 from collections import deque
+import requests
+import json
 
 
 class _NullHandler(logging.Handler):
@@ -43,15 +40,6 @@ class _NullHandler(logging.Handler):
 
 __logger = logging.getLogger(__name__)
 __logger.addHandler(_NullHandler())
-
-try:
-    # Separate module or Python <2.6
-    import simplejson as json
-    __logger.info("Using simplejson library")
-except ImportError:
-    # Python >=2.6
-    import json
-    __logger.info("Using native json library")
 
 
 class ZabbixAPIException(Exception):
@@ -67,61 +55,30 @@ class Already_Exists(ZabbixAPIException):
     pass
 
 
-class InvalidProtoError(ZabbixAPIException):
-    """ Recived an invalid proto """
-    pass
-
-
 class ZabbixAPI(object):
-    __username__ = ''
-    __password__ = ''
-
-    auth = ''
-    id = 0
-    url = '/api_jsonrpc.php'
-    params = None
-    method = None
-    # HTTP or HTTPS
-    proto = 'http'
-    # HTTP authentication
-    httpuser = None
-    httppasswd = None
-    timeout = 10
-    # sub-class instances.
-    user = None
-    usergroup = None
-    host = None
-    item = None
-    hostgroup = None
-    application = None
-    trigger = None
-    sysmap = None
-    template = None
-    drule = None
-
     # Constructor Params:
     # server: Server to connect to
-    # path: Path leading to the zabbix install
-    # proto: Protocol to use. http or https
-    # We're going to use proto://server/path to find the JSON-RPC api.
-    #
-    # user: HTTP auth username
-    # passwd: HTTP auth password
     # r_query_len: max len query history
     # **kwargs: Data to pass to each api module
-    def __init__(self, server='http://localhost/zabbix', user=None,
-            passwd=None, timeout=10, r_query_len=10, **kwargs):
+    def __init__(self, server='http://localhost/zabbix',
+                 timeout=10, r_query_len=10, **kwargs):
         """ Create an API object.  """
 
         self._setuplogging()
 
+        self.http_user = None
+        self.http_password = None
+
+        self.__username__ = ''
+        self.__password__ = ''
+
+        self.auth = ''
+        self.id = 0
+
         self.server = server
         self.url = server + '/api_jsonrpc.php'
-        self.proto = urlparse.urlparse(server).scheme
         self.logger.info("url: %s", self.url)
 
-        self.httpuser = user
-        self.httppasswd = passwd
         self.timeout = timeout
 
         self.user = ZabbixAPIUser(self, **kwargs)
@@ -144,7 +101,6 @@ class ZabbixAPI(object):
         self.script = ZabbixAPIScript(self, **kwargs)
         self.usermacro = ZabbixAPIUserMacro(self, **kwargs)
         self.map = ZabbixAPIMap(self, **kwargs)
-        #self.map = ZabbixAPIMap(self, **kwargs)
         self.drule = ZabbixAPIDRule(self, **kwargs)
         self.history = ZabbixAPIHistory(self, **kwargs)
         self.maintenance = ZabbixAPIMaintenance(self, **kwargs)
@@ -160,20 +116,26 @@ class ZabbixAPI(object):
         self.logger.info("Set logging level to %s", level)
         self.logger.setLevel(level)
 
+    def set_http_auth(self, http_user, http_password):
+        self.http_user = http_user
+        self.http_password = http_password
+
     def recent_query(self):
         """
         return recent query
         """
         return list(self.r_query)
 
-    def json_obj(self, method, params={}):
+    def json_obj(self, method, params=None):
+        if not params:
+            params = dict()
         obj = {
-                'jsonrpc': '2.0',
-                'method':  method,
-                'params':  params,
-                'auth':    self.auth,
-                'id':      self.id,
-              }
+            'jsonrpc': '2.0',
+            'method': method,
+            'params': params,
+            'auth': self.auth,
+            'id': self.id,
+            }
 
         self.logger.debug("json_obj: %s", str(obj))
 
@@ -193,13 +155,10 @@ class ZabbixAPI(object):
         else:
             raise ZabbixAPIException("No authentication information available")
 
-        # don't log the raw password.
-        hashed_pw_string = "md5(" + hashlib.md5(l_password).hexdigest() + ")"
-        self.logger.debug("Trying to login with %s:%s", l_user,
-                hashed_pw_string)
+        self.logger.debug("Trying to login with %s:%s", l_user, l_password)
 
-        obj = self.json_obj('user.authenticate', {'user': l_user,
-                'password': l_password})
+        obj = self.json_obj('user.authenticate',
+                {'user': l_user, 'password': l_password})
         result = self.do_request(obj)
         self.auth = result['result']
 
@@ -218,55 +177,55 @@ class ZabbixAPI(object):
             return False
 
     def do_request(self, json_obj):
-        headers = {'Content-Type': 'application/json-rpc',
-                    'User-Agent': 'python/pyzabbix'}
+        headers = {
+            'Content-Type': 'application/json-rpc',
+            'User-Agent': 'python/pyzabbix'
+        }
 
-        if self.httpuser:
-            self.logger.debug("HTTP Auth enabled")
-            auth = 'Basic ' + string.strip(base64.encodestring(self.httpuser +
-                ':' + self.httppasswd))
-            headers['Authorization'] = auth
         self.r_query.append(str(json_obj))
 
-        self.logger.info("Sending: %s", str(json_obj))
+        self.logger.debug("Sending: %s", str(json_obj))
         self.logger.debug("Sending headers: %s", str(headers))
 
-        request = urllib2.Request(url=self.url, data=json_obj, headers=headers)
-        if self.proto == "https":
-            https_handler = urllib2.HTTPSHandler(debuglevel=0)
-            opener = urllib2.build_opener(https_handler)
-        elif self.proto == "http":
-            http_handler = urllib2.HTTPHandler(debuglevel=0)
-            opener = urllib2.build_opener(http_handler)
-        else:
-            raise ZabbixAPIException("Unknown protocol %s" % self.proto)
+        response = requests.get(
+            self.url,
+            auth=(self.http_user, self.http_password),
+            timeout=self.timeout,
+            data=json_obj,
+            headers=headers
+        )
 
-        urllib2.install_opener(opener)
-        response = opener.open(request, timeout=self.timeout)
-
-        self.logger.debug("Response Code: %s", str(response.code))
+        self.logger.debug("Response Code: %s", str(response.status_code))
 
         # NOTE: Getting a 412 response code means the headers are not in the
         # list of allowed headers.
-        if response.code != 200:
-            raise ZabbixAPIException("HTTP ERROR %s: %s"
-                    % (response.status, response.reason))
-        reads = response.read()
+        response.raise_for_status()
 
-        if len(reads) == 0:
+        # fallback to utf-8 encoding if chardet module is not available
+        # and content-type HTTP header does not contain charset
+        if response.text == None:
+            response.encoding = 'utf-8'
+
+        if not len(response.text):
             raise ZabbixAPIException("Received zero answer")
         try:
-            jobj = json.loads(reads)
-        except ValueError, msg:
-            raise ZabbixAPIException("Unable to parse json: %s" % reads)
+            jobj = json.loads(response.text)
+        except ValueError as msg:
+            raise ZabbixAPIException(
+                "Unable to parse json: %s" % response.text
+            )
         self.logger.debug("Response Body: %s", str(jobj))
 
         self.id += 1
 
         if 'error' in jobj:  # some exception
-            msg = "Error %s: %s, %s while sending %s" % (jobj['error']['code'],
-                    jobj['error']['message'], jobj['error']['data'],
-                    str(json_obj))
+            msg = "Error {code}: {message}, {data} while sending {json}"\
+            .format(
+                code=jobj['error']['code'],
+                message=jobj['error']['message'],
+                data=jobj['error']['data'],
+                json=str(json_obj)
+            )
             if re.search(".*already\sexists.*", jobj["error"]["data"], re.I):
                 raise Already_Exists(msg, jobj['error']['code'])
             else:
@@ -314,9 +273,11 @@ class ZabbixAPISubClass(ZabbixAPI):
 
 def checkauth(fn):
     """ Decorator to check authentication of the decorated method """
+
     def ret(self, *args):
         self.__checkauth__()
         return fn(self, args)
+
     ret.__doc__ = fn.__doc__
     return ret
 
@@ -328,13 +289,12 @@ def dojson(name):
                 raise TypeError("Found both args and kwargs")
 
             arg = args or kwargs
-            self.logger.debug("Going to do_request for %s with opts %s",
-                              repr(fn),
-                              repr(arg),
-                              )
+            self.logger.info("Going to do %s with opts %s", name, arg)
             return self.do_request(self.json_obj(name, arg))['result']
+
         wrapper.__doc__ = fn.__doc__
         return wrapper
+
     return decorator
 
 
@@ -601,7 +561,6 @@ class ZabbixAPIUser(ZabbixAPISubClass):
 
 
 class ZabbixAPIHost(ZabbixAPISubClass):
-
     @dojson('host.get')
     @checkauth
     def get(self, **opts):
@@ -952,7 +911,6 @@ class ZabbixAPIItem(ZabbixAPISubClass):
 
 
 class ZabbixAPIUserGroup(ZabbixAPISubClass):
-
     @dojson('usergroup.get')
     @checkauth
     def get(self, **opts):
@@ -1040,7 +998,6 @@ class ZabbixAPIUserGroup(ZabbixAPISubClass):
 
 
 class ZabbixAPIHostGroup(ZabbixAPISubClass):
-
     @dojson('hostgroup.get')
     @checkauth
     def get(self, **opts):
@@ -1200,7 +1157,6 @@ class ZabbixAPIHostGroup(ZabbixAPISubClass):
 
 
 class ZabbixAPIApplication(ZabbixAPISubClass):
-
     @dojson('application.get')
     @checkauth
     def get(self, **opts):
@@ -1316,7 +1272,6 @@ class ZabbixAPIApplication(ZabbixAPISubClass):
 
 
 class ZabbixAPITrigger(ZabbixAPISubClass):
-
     @dojson('trigger.get')
     @checkauth
     def get(self, **opts):
@@ -1466,7 +1421,6 @@ class ZabbixAPITrigger(ZabbixAPISubClass):
 
 
 class ZabbixAPISysMap(ZabbixAPISubClass):
-
     @dojson('map.get')
     @checkauth
     def get(self, **opts):
@@ -1636,7 +1590,6 @@ class ZabbixAPISysMap(ZabbixAPISubClass):
 
 
 class ZabbixAPITemplate(ZabbixAPISubClass):
-
     @dojson('template.get')
     @checkauth
     def get(self, **opts):
@@ -1653,23 +1606,24 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
  * @return array|boolean Template data as array or false if error
 """
         return opts
-#
-#    @dojson('template.getObjects')
-#    @checkauth
-#    def get(self, **opts):
-#        """  * Get Template ID by Template name
-# *
-# * {@source}
-# * @access public
-# * @static
-# * @since 1.8
-# * @version 1
-# *
-# * @param array $template_data
-# * @param array $template_data['host']
-# * @return string templateid
-#"""
-#        return opts
+
+    #
+    #    @dojson('template.getObjects')
+    #    @checkauth
+    #    def get(self, **opts):
+    #        """  * Get Template ID by Template name
+    # *
+    # * {@source}
+    # * @access public
+    # * @static
+    # * @since 1.8
+    # * @version 1
+    # *
+    # * @param array $template_data
+    # * @param array $template_data['host']
+    # * @return string templateid
+    #"""
+    #        return opts
 
     @dojson('template.create')
     @checkauth
