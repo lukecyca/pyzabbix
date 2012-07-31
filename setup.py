@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name="pyzabbix",
     version="0.2",
-    requires=["requests>=0.10.1"],
+    install_requires=["requests>=0.10.1"],
     description="Zabbix API Python interface",
     author="Luke Cyca",
     author_email="me@lukecyca.com",

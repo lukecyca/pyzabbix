@@ -105,6 +105,7 @@ class ZabbixAPI(object):
         self.history = ZabbixAPIHistory(self, **kwargs)
         self.maintenance = ZabbixAPIMaintenance(self, **kwargs)
         self.proxy = ZabbixAPIProxy(self, **kwargs)
+        self.hostinterface = ZabbixAPIHostInterface(self, **kwargs)
         self.id = 0
         self.r_query = deque([], maxlen=r_query_len)
 
@@ -3056,3 +3057,49 @@ class ZabbixAPIMaintenance(ZabbixAPISubClass):
     @checkauth
     def update(self, **opts):
         return opts
+
+
+class ZabbixAPIHostInterface(ZabbixAPISubClass):
+    @dojson('hostinterface.get')
+    @checkauth
+    def get(self, **opts):
+        """* Get Interface Interface data
+        *
+        * @param array   $options
+        * @param array   $options['nodeids']     Node IDs
+        * @param array   $options['hostids']     Interface IDs
+        * @param boolean $options['editable']    only with read-write permission. Ignored for SuperAdmins
+        * @param boolean $options['selectHosts'] select Interface hosts
+        * @param boolean $options['selectItems'] select Items
+        * @param int     $options['count']       count Interfaces, returned column name is rowscount
+        * @param string  $options['pattern']     search hosts by pattern in Interface name
+        * @param int     $options['limit']       limit selection
+        * @param string  $options['sortfield']   field to sort by
+        * @param string  $options['sortorder']   sort order
+        *
+        * @return array|boolean Interface data as array or false if error
+        """
+        return opts
+
+    @dojson('hostinterface.exists')
+    @checkauth
+    def exists(self, **opts):
+        return opts
+
+
+    @dojson('hostinterface.create')
+    @checkauth
+    def create(self, **opts):
+        return opts
+
+
+    @dojson('hostinterface.update')
+    @checkauth
+    def update(self, **opts):
+        return opts
+
+    @dojson('hostinterface.delete')
+    @checkauth
+    def delete(self, **opts):
+        return opts
+
