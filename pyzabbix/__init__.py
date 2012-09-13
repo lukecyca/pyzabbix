@@ -1608,23 +1608,22 @@ class ZabbixAPITemplate(ZabbixAPISubClass):
 """
         return opts
 
-    #
-    #    @dojson('template.getObjects')
-    #    @checkauth
-    #    def get(self, **opts):
-    #        """  * Get Template ID by Template name
-    # *
-    # * {@source}
-    # * @access public
-    # * @static
-    # * @since 1.8
-    # * @version 1
-    # *
-    # * @param array $template_data
-    # * @param array $template_data['host']
-    # * @return string templateid
-    #"""
-    #        return opts
+    @dojson('template.getObjects')
+    @checkauth
+    def getObjects(self, **opts):
+        """  * Get Template ID by Template name
+ *
+ * {@source}
+ * @access public
+ * @static
+ * @since 1.8
+ * @version 1
+ *
+ * @param array $template_data
+ * @param array $template_data['host']
+ * @return string templateid
+"""
+        return opts
 
     @dojson('template.create')
     @checkauth
