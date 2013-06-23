@@ -29,7 +29,6 @@
 
 import logging
 import re
-from collections import deque
 import requests
 import json
 
@@ -58,12 +57,10 @@ class Already_Exists(ZabbixAPIException):
 class ZabbixAPI(object):
     # Constructor Params:
     # server: Server to connect to
-    # r_query_len: max len query history
     # **kwargs: Data to pass to each api module
     def __init__(self,
                  server='http://localhost/zabbix',
                  session=None,
-                 r_query_len=10,
                  **kwargs):
         """ Create an API object.  """
 
@@ -77,7 +74,6 @@ class ZabbixAPI(object):
 
         self.auth = ''
         self.id = 0
-        self.r_query = deque([], maxlen=r_query_len)
 
         self.server = server
         self.url = server + '/api_jsonrpc.php'
@@ -107,12 +103,6 @@ class ZabbixAPI(object):
         self.user = ZabbixAPIUser(self, **kwargs)
         self.usergroup = ZabbixAPIUserGroup(self, **kwargs)
         self.usermacro = ZabbixAPIUserMacro(self, **kwargs)
-
-    def recent_query(self):
-        """
-        return recent query
-        """
-        return list(self.r_query)
 
     def json_obj(self, method, params=None):
         if not params:
@@ -167,8 +157,6 @@ class ZabbixAPI(object):
             'Content-Type': 'application/json-rpc',
             'User-Agent': 'python/pyzabbix'
         }
-
-        self.r_query.append(str(json_obj))
 
         logger.debug("Sending: %s", str(json_obj))
         logger.debug("Sending headers: %s", str(headers))
