@@ -64,9 +64,6 @@ class ZabbixAPI(object):
                  **kwargs):
         """ Create an API object.  """
 
-        self.__username__ = ''
-        self.__password__ = ''
-
         if session:
             self.session = session
         else:
@@ -119,38 +116,10 @@ class ZabbixAPI(object):
 
         return json.dumps(obj)
 
-    def login(self, user='', password='', save=True):
-        if user != '':
-            l_user = user
-            l_password = password
-
-            if save:
-                self.__username__ = user
-                self.__password__ = password
-        elif self.__username__ != '':
-            l_user = self.__username__
-            l_password = self.__password__
-        else:
-            raise ZabbixAPIException("No authentication information available")
-
-        logger.debug("Trying to login with %s:%s", l_user, l_password)
-
-        obj = self.json_obj('user.authenticate', {'user': l_user, 'password': l_password})
+    def login(self, user='', password=''):
+        obj = self.json_obj('user.login', {'user': user, 'password': password})
         result = self.do_request(obj)
         self.auth = result['result']
-
-    def test_login(self):
-        if self.auth != '':
-            obj = self.json_obj('user.checkAuthentication', {'sessionid': self.auth})
-            result = self.do_request(obj)
-
-            if not result['result']:
-                self.auth = ''
-                return False  # auth hash bad
-
-            return True  # auth hash good
-        else:
-            return False
 
     def do_request(self, json_obj):
         headers = {
