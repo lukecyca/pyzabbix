@@ -82,33 +82,33 @@ class ZabbixAPI(object):
 
         self.timeout = timeout
 
-        self.user = ZabbixAPIUser(self, **kwargs)
-        self.usergroup = ZabbixAPIUserGroup(self, **kwargs)
-        self.host = ZabbixAPIHost(self, **kwargs)
-        self.item = ZabbixAPIItem(self, **kwargs)
-        self.hostgroup = ZabbixAPIHostGroup(self, **kwargs)
-        self.application = ZabbixAPIApplication(self, **kwargs)
-        self.trigger = ZabbixAPITrigger(self, **kwargs)
-        self.sysmap = ZabbixAPISysMap(self, **kwargs)
-        self.template = ZabbixAPITemplate(self, **kwargs)
+        self.id = 0
+        self.r_query = deque([], maxlen=r_query_len)
+
         self.action = ZabbixAPIAction(self, **kwargs)
         self.alert = ZabbixAPIAlert(self, **kwargs)
-        self.info = ZabbixAPIInfo(self, **kwargs)
+        self.application = ZabbixAPIApplication(self, **kwargs)
+        self.drule = ZabbixAPIDRule(self, **kwargs)
         self.event = ZabbixAPIEvent(self, **kwargs)
         self.graph = ZabbixAPIGraph(self, **kwargs)
         self.graphitem = ZabbixAPIGraphItem(self, **kwargs)
+        self.history = ZabbixAPIHistory(self, **kwargs)
+        self.host = ZabbixAPIHost(self, **kwargs)
+        self.hostgroup = ZabbixAPIHostGroup(self, **kwargs)
+        self.hostinterface = ZabbixAPIHostInterface(self, **kwargs)
+        self.info = ZabbixAPIInfo(self, **kwargs)
+        self.item = ZabbixAPIItem(self, **kwargs)
+        self.maintenance = ZabbixAPIMaintenance(self, **kwargs)
         self.map = ZabbixAPIMap(self, **kwargs)
+        self.proxy = ZabbixAPIProxy(self, **kwargs)
         self.screen = ZabbixAPIScreen(self, **kwargs)
         self.script = ZabbixAPIScript(self, **kwargs)
+        self.sysmap = ZabbixAPISysMap(self, **kwargs)
+        self.template = ZabbixAPITemplate(self, **kwargs)
+        self.trigger = ZabbixAPITrigger(self, **kwargs)
+        self.user = ZabbixAPIUser(self, **kwargs)
+        self.usergroup = ZabbixAPIUserGroup(self, **kwargs)
         self.usermacro = ZabbixAPIUserMacro(self, **kwargs)
-        self.map = ZabbixAPIMap(self, **kwargs)
-        self.drule = ZabbixAPIDRule(self, **kwargs)
-        self.history = ZabbixAPIHistory(self, **kwargs)
-        self.maintenance = ZabbixAPIMaintenance(self, **kwargs)
-        self.proxy = ZabbixAPIProxy(self, **kwargs)
-        self.hostinterface = ZabbixAPIHostInterface(self, **kwargs)
-        self.id = 0
-        self.r_query = deque([], maxlen=r_query_len)
 
     def set_http_auth(self, http_user, http_password):
         self.http_user = http_user
@@ -2267,6 +2267,18 @@ class ZabbixAPIGraphItem(ZabbixAPISubClass):
 """
         return opts
 
+
+class ZabbixAPIMaintenance(ZabbixAPISubClass):
+    @dojson('maintenance.create')
+    @checkauth
+    def create(self, **opts):
+        return opts
+
+    @dojson('maintenance.exists')
+    @checkauth
+    def exists(self, **opts):
+        return opts
+
     @dojson('maintenance.get')
     @checkauth
     def get(self, **opts):
@@ -3020,33 +3032,6 @@ class ZabbixAPIProxy(ZabbixAPISubClass):
         return opts
 
 
-class ZabbixAPIMaintenance(ZabbixAPISubClass):
-    @dojson('maintenance.create')
-    @checkauth
-    def create(self, **opts):
-        return opts
-
-    @dojson('maintenance.delete')
-    @checkauth
-    def delete(self, **opts):
-        return opts
-
-    @dojson('maintenance.exists')
-    @checkauth
-    def exists(self, **opts):
-        return opts
-
-    @dojson('maintenance.get')
-    @checkauth
-    def get(self, **opts):
-        return opts
-
-    @dojson('maintenance.update')
-    @checkauth
-    def update(self, **opts):
-        return opts
-
-
 class ZabbixAPIHostInterface(ZabbixAPISubClass):
     @dojson('hostinterface.get')
     @checkauth
@@ -3056,10 +3041,12 @@ class ZabbixAPIHostInterface(ZabbixAPISubClass):
         * @param array   $options
         * @param array   $options['nodeids']     Node IDs
         * @param array   $options['hostids']     Interface IDs
-        * @param boolean $options['editable']    only with read-write permission. Ignored for SuperAdmins
+        * @param boolean $options['editable']    only with read-write permission.
+                                                 Ignored for SuperAdmins
         * @param boolean $options['selectHosts'] select Interface hosts
         * @param boolean $options['selectItems'] select Items
-        * @param int     $options['count']       count Interfaces, returned column name is rowscount
+        * @param int     $options['count']       count Interfaces,
+                                                 returned column name is rowscount
         * @param string  $options['pattern']     search hosts by pattern in Interface name
         * @param int     $options['limit']       limit selection
         * @param string  $options['sortfield']   field to sort by
@@ -3074,12 +3061,10 @@ class ZabbixAPIHostInterface(ZabbixAPISubClass):
     def exists(self, **opts):
         return opts
 
-
     @dojson('hostinterface.create')
     @checkauth
     def create(self, **opts):
         return opts
-
 
     @dojson('hostinterface.update')
     @checkauth
