@@ -14,7 +14,7 @@ class TestPyZabbix(unittest.TestCase):
             body=json.dumps({
                 "jsonrpc": "2.0",
                 "result": "0424bd59b807674191e7d77572075f33",
-                "id": 1
+                "id": 0
             }),
         )
 
@@ -32,6 +32,45 @@ class TestPyZabbix(unittest.TestCase):
                 'id': 0,
             })
         )
+        self.assertEqual(
+            httpretty.last_request().headers['content-type'],
+            'application/json-rpc'
+        )
+        self.assertEqual(
+            httpretty.last_request().headers['user-agent'],
+            'python/pyzabbix'
+        )
 
         # Check response
         self.assertEqual(zapi.auth, "0424bd59b807674191e7d77572075f33")
+
+    @httpretty.activate
+    def test_host_get(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "http://example.com/api_jsonrpc.php",
+            body=json.dumps({
+                "jsonrpc": "2.0",
+                "result": [{"hostid": 1234}],
+                "id": 0
+            }),
+        )
+
+        zapi = ZabbixAPI('http://example.com')
+        zapi.auth = "123"
+        result = zapi.host.get()
+
+        # Check request
+        self.assertEqual(
+            httpretty.last_request().body,
+            json.dumps({
+                'jsonrpc': '2.0',
+                'method': 'host.get',
+                'params': {},
+                'auth': '123',
+                'id': 0,
+            })
+        )
+
+        # Check response
+        self.assertEqual(result, [{"hostid": 1234}])
