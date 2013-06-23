@@ -60,8 +60,11 @@ class ZabbixAPI(object):
     # server: Server to connect to
     # r_query_len: max len query history
     # **kwargs: Data to pass to each api module
-    def __init__(self, server='http://localhost/zabbix',
-                 timeout=10, r_query_len=10, **kwargs):
+    def __init__(self,
+                 server='http://localhost/zabbix',
+                 timeout=10,
+                 r_query_len=10,
+                 **kwargs):
         """ Create an API object.  """
 
         self.http_user = None
@@ -126,7 +129,7 @@ class ZabbixAPI(object):
             'params': params,
             'auth': self.auth,
             'id': self.id,
-            }
+        }
 
         logger.debug("json_obj: %s", str(obj))
 
@@ -148,15 +151,13 @@ class ZabbixAPI(object):
 
         logger.debug("Trying to login with %s:%s", l_user, l_password)
 
-        obj = self.json_obj('user.authenticate',
-                {'user': l_user, 'password': l_password})
+        obj = self.json_obj('user.authenticate', {'user': l_user, 'password': l_password})
         result = self.do_request(obj)
         self.auth = result['result']
 
     def test_login(self):
         if self.auth != '':
-            obj = self.json_obj('user.checkAuthentication',
-                    {'sessionid': self.auth})
+            obj = self.json_obj('user.checkAuthentication', {'sessionid': self.auth})
             result = self.do_request(obj)
 
             if not result['result']:
@@ -194,7 +195,7 @@ class ZabbixAPI(object):
 
         # fallback to utf-8 encoding if chardet module is not available
         # and content-type HTTP header does not contain charset
-        if response.text == None:
+        if response.text is None:
             response.encoding = 'utf-8'
 
         if not len(response.text):
@@ -210,8 +211,7 @@ class ZabbixAPI(object):
         self.id += 1
 
         if 'error' in jobj:  # some exception
-            msg = "Error {code}: {message}, {data} while sending {json}"\
-            .format(
+            msg = "Error {code}: {message}, {data} while sending {json}".format(
                 code=jobj['error']['code'],
                 message=jobj['error']['message'],
                 data=jobj['error']['data'],
@@ -3090,4 +3090,3 @@ class ZabbixAPIHostInterface(ZabbixAPISubClass):
     @checkauth
     def delete(self, **opts):
         return opts
-
