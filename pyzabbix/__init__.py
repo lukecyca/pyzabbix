@@ -62,28 +62,26 @@ class ZabbixAPI(object):
     # **kwargs: Data to pass to each api module
     def __init__(self,
                  server='http://localhost/zabbix',
-                 timeout=10,
+                 session=None,
                  r_query_len=10,
                  **kwargs):
         """ Create an API object.  """
 
-        self.http_user = None
-        self.http_password = None
-
         self.__username__ = ''
         self.__password__ = ''
 
+        if session:
+            self.session = session
+        else:
+            self.session = requests.Session()
+
         self.auth = ''
         self.id = 0
+        self.r_query = deque([], maxlen=r_query_len)
 
         self.server = server
         self.url = server + '/api_jsonrpc.php'
         logger.info("url: %s", self.url)
-
-        self.timeout = timeout
-
-        self.id = 0
-        self.r_query = deque([], maxlen=r_query_len)
 
         self.action = ZabbixAPIAction(self, **kwargs)
         self.alert = ZabbixAPIAlert(self, **kwargs)
@@ -109,10 +107,6 @@ class ZabbixAPI(object):
         self.user = ZabbixAPIUser(self, **kwargs)
         self.usergroup = ZabbixAPIUserGroup(self, **kwargs)
         self.usermacro = ZabbixAPIUserMacro(self, **kwargs)
-
-    def set_http_auth(self, http_user, http_password):
-        self.http_user = http_user
-        self.http_password = http_password
 
     def recent_query(self):
         """
@@ -179,10 +173,8 @@ class ZabbixAPI(object):
         logger.debug("Sending: %s", str(json_obj))
         logger.debug("Sending headers: %s", str(headers))
 
-        response = requests.get(
+        response = self.session.get(
             self.url,
-            auth=(self.http_user, self.http_password),
-            timeout=self.timeout,
             data=json_obj,
             headers=headers
         )

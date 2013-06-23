@@ -14,7 +14,6 @@ from pyzabbix import ZabbixAPI, ZabbixAPIException
 ZABBIX_SERVER = 'https://zabbix.example.com'
 
 zapi = ZabbixAPI(ZABBIX_SERVER)
-zapi.set_http_auth('http_username', 'http_password')
 
 # Login to the Zabbix API
 zapi.login('api_username', 'api_password')
