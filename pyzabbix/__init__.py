@@ -38,8 +38,8 @@ class _NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
-__logger = logging.getLogger(__name__)
-__logger.addHandler(_NullHandler())
+logger = logging.getLogger(__name__)
+logger.addHandler(_NullHandler())
 
 
 class ZabbixAPIException(Exception):
@@ -64,8 +64,6 @@ class ZabbixAPI(object):
                  timeout=10, r_query_len=10, **kwargs):
         """ Create an API object.  """
 
-        self._setuplogging()
-
         self.http_user = None
         self.http_password = None
 
@@ -77,7 +75,7 @@ class ZabbixAPI(object):
 
         self.server = server
         self.url = server + '/api_jsonrpc.php'
-        self.logger.info("url: %s", self.url)
+        logger.info("url: %s", self.url)
 
         self.timeout = timeout
 
@@ -109,14 +107,6 @@ class ZabbixAPI(object):
         self.id = 0
         self.r_query = deque([], maxlen=r_query_len)
 
-    def _setuplogging(self):
-        self.logger = logging.getLogger('{0}.{1}'.format(__name__,
-            self.__class__.__name__))
-
-    def set_log_level(self, level):
-        self.logger.info("Set logging level to %s", level)
-        self.logger.setLevel(level)
-
     def set_http_auth(self, http_user, http_password):
         self.http_user = http_user
         self.http_password = http_password
@@ -138,7 +128,7 @@ class ZabbixAPI(object):
             'id': self.id,
             }
 
-        self.logger.debug("json_obj: %s", str(obj))
+        logger.debug("json_obj: %s", str(obj))
 
         return json.dumps(obj)
 
@@ -156,7 +146,7 @@ class ZabbixAPI(object):
         else:
             raise ZabbixAPIException("No authentication information available")
 
-        self.logger.debug("Trying to login with %s:%s", l_user, l_password)
+        logger.debug("Trying to login with %s:%s", l_user, l_password)
 
         obj = self.json_obj('user.authenticate',
                 {'user': l_user, 'password': l_password})
@@ -185,8 +175,8 @@ class ZabbixAPI(object):
 
         self.r_query.append(str(json_obj))
 
-        self.logger.debug("Sending: %s", str(json_obj))
-        self.logger.debug("Sending headers: %s", str(headers))
+        logger.debug("Sending: %s", str(json_obj))
+        logger.debug("Sending headers: %s", str(headers))
 
         response = requests.get(
             self.url,
@@ -196,7 +186,7 @@ class ZabbixAPI(object):
             headers=headers
         )
 
-        self.logger.debug("Response Code: %s", str(response.status_code))
+        logger.debug("Response Code: %s", str(response.status_code))
 
         # NOTE: Getting a 412 response code means the headers are not in the
         # list of allowed headers.
@@ -215,7 +205,7 @@ class ZabbixAPI(object):
             raise ZabbixAPIException(
                 "Unable to parse json: %s" % response.text
             )
-        self.logger.debug("Response Body: %s", str(jobj))
+        logger.debug("Response Body: %s", str(jobj))
 
         self.id += 1
 
@@ -253,14 +243,13 @@ class ZabbixAPISubClass(ZabbixAPI):
     parent = None
 
     def __init__(self, parent, **kwargs):
-        self._setuplogging()
-        self.logger.debug("Creating %s", self.__class__.__name__)
+        logger.debug("Creating %s", self.__class__.__name__)
 
         self.parent = parent
         # Save any extra info passed in
         for key, val in kwargs.items():
             setattr(self, key, val)
-            self.logger.warning("Set %s: %s", repr(key), repr(val))
+            logger.warning("Set %s: %s", repr(key), repr(val))
 
     def __checkauth__(self):
         self.parent.__checkauth__()
@@ -290,7 +279,7 @@ def dojson(name):
                 raise TypeError("Found both args and kwargs")
 
             arg = args or kwargs
-            self.logger.info("Going to do %s with opts %s", name, arg)
+            logger.info("Going to do %s with opts %s", name, arg)
             return self.do_request(self.json_obj(name, arg))['result']
 
         wrapper.__doc__ = fn.__doc__
