@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="pyzabbix",
-    version="0.3",
+    version="0.4",
     install_requires=[
         "requests>=1.0",
     ],
