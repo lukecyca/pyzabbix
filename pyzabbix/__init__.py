@@ -113,7 +113,7 @@ class ZabbixAPIObjectClass(object):
 
         def fn(**kwargs):
             return self.parent.do_request(
-                '{}.{}'.format(self.name, attr),
+                '{0}.{1}'.format(self.name, attr),
                 kwargs
             )['result']
 
