@@ -74,3 +74,39 @@ class TestPyZabbix(unittest.TestCase):
 
         # Check response
         self.assertEqual(result, [{"hostid": 1234}])
+
+    @httpretty.activate
+    def test_host_delete(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            "http://example.com/api_jsonrpc.php",
+            body=json.dumps({
+                "jsonrpc": "2.0",
+                "result": {
+                    "itemids": [
+                        "22982",
+                        "22986"
+                    ]
+                },
+                "id": 0
+            }),
+        )
+
+        zapi = ZabbixAPI('http://example.com')
+        zapi.auth = "123"
+        result = zapi.host.delete("22982", "22986")
+
+        # Check request
+        self.assertEqual(
+            httpretty.last_request().body,
+            json.dumps({
+                'jsonrpc': '2.0',
+                'method': 'host.delete',
+                'params': ["22982", "22986"],
+                'auth': '123',
+                'id': 0,
+            })
+        )
+
+        # Check response
+        self.assertEqual(set(result["itemids"]), set(["22982", "22986"]))

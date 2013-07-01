@@ -111,10 +111,13 @@ class ZabbixAPIObjectClass(object):
     def __getattr__(self, attr):
         """Dynamically create a method (ie: get)"""
 
-        def fn(**kwargs):
+        def fn(*args, **kwargs):
+            if args and kwargs:
+                raise TypeError("Found both args and kwargs")
+
             return self.parent.do_request(
                 '{0}.{1}'.format(self.name, attr),
-                kwargs
+                args or kwargs
             )['result']
 
         return fn
