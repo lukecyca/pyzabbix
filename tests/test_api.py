@@ -9,7 +9,7 @@ class TestPyZabbix(unittest.TestCase):
     @httpretty.activate
     def test_login(self):
         httpretty.register_uri(
-            httpretty.GET,
+            httpretty.POST,
             "http://example.com/api_jsonrpc.php",
             body=json.dumps({
                 "jsonrpc": "2.0",
@@ -47,7 +47,7 @@ class TestPyZabbix(unittest.TestCase):
     @httpretty.activate
     def test_host_get(self):
         httpretty.register_uri(
-            httpretty.GET,
+            httpretty.POST,
             "http://example.com/api_jsonrpc.php",
             body=json.dumps({
                 "jsonrpc": "2.0",
@@ -78,7 +78,7 @@ class TestPyZabbix(unittest.TestCase):
     @httpretty.activate
     def test_host_delete(self):
         httpretty.register_uri(
-            httpretty.GET,
+            httpretty.POST,
             "http://example.com/api_jsonrpc.php",
             body=json.dumps({
                 "jsonrpc": "2.0",
