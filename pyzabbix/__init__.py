@@ -62,7 +62,7 @@ class ZabbixAPI(object):
         }
 
         logger.debug("Sending: %s", str(request_json))
-        response = self.session.get(
+        response = self.session.post(
             self.url,
             data=json.dumps(request_json),
         )
