@@ -49,6 +49,9 @@ class ZabbixAPI(object):
     def login(self, user='', password=''):
         self.auth = self.user.login(user=user, password=password)
 
+    def confimport(self, format='', source='', rules=''):
+        return self.do_request(method="configuration.import", params={"format": format, "source": source, "rules": rules})['result']
+
     def api_version(self):
         return self.apiinfo.version()
 
