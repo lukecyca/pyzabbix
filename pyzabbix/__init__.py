@@ -29,6 +29,7 @@ class ZabbixAPI(object):
                  server='http://localhost/zabbix',
                  session=None,
                  verify_ssl=True):
+
         self.verify_ssl = verify_ssl
 
         if session:
