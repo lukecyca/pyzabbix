@@ -27,7 +27,9 @@ class AlreadyExists(ZabbixAPIException):
 class ZabbixAPI(object):
     def __init__(self,
                  server='http://localhost/zabbix',
-                 session=None):
+                 session=None,
+                 verify_ssl=True):
+        self.verify_ssl = verify_ssl
 
         if session:
             self.session = session
@@ -68,6 +70,7 @@ class ZabbixAPI(object):
         response = self.session.post(
             self.url,
             data=json.dumps(request_json),
+            verify=self.verify_ssl
         )
         logger.debug("Response Code: %s", str(response.status_code))
 
