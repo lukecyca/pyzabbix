@@ -27,12 +27,17 @@ class AlreadyExists(ZabbixAPIException):
 class ZabbixAPI(object):
     def __init__(self,
                  server='http://localhost/zabbix',
-                 session=None):
+                 session=None,
+                 ssl_verify=True):
 
         if session:
             self.session = session
         else:
             self.session = requests.Session()
+
+        # Allow no SSL verification - else default to requests.session's default
+        if not ssl_verify:
+            self.session.verify = False        
 
         # Default headers for all requests
         self.session.headers.update({
