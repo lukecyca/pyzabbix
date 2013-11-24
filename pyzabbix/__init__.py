@@ -27,7 +27,8 @@ class AlreadyExists(ZabbixAPIException):
 class ZabbixAPI(object):
     def __init__(self,
                  server='http://localhost/zabbix',
-                 session=None):
+                 session=None,
+                 use_authenticate=False):
 
         if session:
             self.session = session
@@ -40,6 +41,7 @@ class ZabbixAPI(object):
             'User-Agent': 'python/pyzabbix'
         })
 
+        self.use_authenticate = use_authenticate
         self.auth = ''
         self.id = 0
 
@@ -47,7 +49,10 @@ class ZabbixAPI(object):
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
     def login(self, user='', password=''):
-        self.auth = self.user.login(user=user, password=password)
+        if self.use_authenticate:
+            self.auth = self.user.authenticate(user=user, password=password)
+        else:
+            self.auth = self.user.login(user=user, password=password)
 
     def confimport(self, format='', source='', rules=''):
         return self.do_request(method="configuration.import", params={"format": format, "source": source, "rules": rules})['result']
