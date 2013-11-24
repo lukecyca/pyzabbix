@@ -20,15 +20,17 @@ class ZabbixAPIException(Exception):
     pass
 
 
-class AlreadyExists(ZabbixAPIException):
-    pass
-
-
 class ZabbixAPI(object):
     def __init__(self,
                  server='http://localhost/zabbix',
                  session=None,
                  use_authenticate=False):
+        """
+        Parameters:
+            server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
+            session: optional pre-configured requests.Session instance
+            use_authenticate: Use old (Zabbix 1.8) style authentication
+        """
 
         if session:
             self.session = session
@@ -49,13 +51,23 @@ class ZabbixAPI(object):
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
     def login(self, user='', password=''):
+        """Convenience method for calling user.authenticate and storing the resulting auth token
+           for further commands.
+           If use_authenticate is set, it uses the older (Zabbix 1.8) authentication command"""
+
         if self.use_authenticate:
             self.auth = self.user.authenticate(user=user, password=password)
         else:
             self.auth = self.user.login(user=user, password=password)
 
     def confimport(self, format='', source='', rules=''):
-        return self.do_request(method="configuration.import", params={"format": format, "source": source, "rules": rules})['result']
+        """Alias for configuration.import because it clashes with
+           Python's import reserved keyword"""
+
+        return self.do_request(
+            method="configuration.import",
+            params={"format": format, "source": source, "rules": rules}
+        )['result']
 
     def api_version(self):
         return self.apiinfo.version()
