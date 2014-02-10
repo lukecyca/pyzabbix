@@ -55,6 +55,9 @@ class ZabbixAPI(object):
            for further commands.
            If use_authenticate is set, it uses the older (Zabbix 1.8) authentication command"""
 
+        # If we have an invalid auth token, we are not allowed to send a login
+        # request. Clear it before trying.
+        self.auth = ''
         if self.use_authenticate:
             self.auth = self.user.authenticate(user=user, password=password)
         else:
