@@ -4,6 +4,7 @@ import json
 
 
 class _NullHandler(logging.Handler):
+
     def emit(self, record):
         pass
 
@@ -12,6 +13,7 @@ logger.addHandler(_NullHandler())
 
 
 class ZabbixAPIException(Exception):
+
     """ generic zabbix api exception
     code list:
          -32602 - Invalid params (eg already exists)
@@ -21,15 +23,18 @@ class ZabbixAPIException(Exception):
 
 
 class ZabbixAPI(object):
+
     def __init__(self,
                  server='http://localhost/zabbix',
                  session=None,
+                 ssl_verify=True,
                  use_authenticate=False):
         """
         Parameters:
             server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
             session: optional pre-configured requests.Session instance
             use_authenticate: Use old (Zabbix 1.8) style authentication
+            ssl_verify: Verify SSL Certificates, defaults to True
         """
 
         if session:
@@ -49,6 +54,8 @@ class ZabbixAPI(object):
 
         self.url = server + '/api_jsonrpc.php'
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
+
+        self.ssl_verify = ssl_verify
 
     def login(self, user='', password=''):
         """Convenience method for calling user.authenticate and storing the resulting auth token
@@ -88,6 +95,7 @@ class ZabbixAPI(object):
         response = self.session.post(
             self.url,
             data=json.dumps(request_json),
+            verify=self.ssl_verify,
         )
         logger.debug("Response Code: %s", str(response.status_code))
 
@@ -127,6 +135,7 @@ class ZabbixAPI(object):
 
 
 class ZabbixAPIObjectClass(object):
+
     def __init__(self, name, parent):
         self.name = name
         self.parent = parent
