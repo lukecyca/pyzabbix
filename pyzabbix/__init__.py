@@ -24,13 +24,11 @@ class ZabbixAPI(object):
     def __init__(self,
                  server='http://localhost/zabbix',
                  session=None,
-                 verify=True,
                  use_authenticate=False):
         """
         Parameters:
             server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
             session: optional pre-configured requests.Session instance
-            verify: Verify the SSL Certificate (see python-requests documentation)
             use_authenticate: Use old (Zabbix 1.8) style authentication
         """
 
@@ -45,7 +43,6 @@ class ZabbixAPI(object):
             'User-Agent': 'python/pyzabbix'
         })
 
-        self.verify = verify
         self.use_authenticate = use_authenticate
         self.auth = ''
         self.id = 0
@@ -91,7 +88,6 @@ class ZabbixAPI(object):
         response = self.session.post(
             self.url,
             data=json.dumps(request_json),
-            verify=self.verify
         )
         logger.debug("Response Code: %s", str(response.status_code))
 
