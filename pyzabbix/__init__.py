@@ -84,7 +84,9 @@ class ZabbixAPI(object):
             'id': self.id,
         }
 
-        logger.debug("Sending: %s", str(request_json))
+        logger.debug("Sending: %s", json.dumps(request_json,
+                                               indent=4,
+                                               separators=(',', ': ')))
         response = self.session.post(
             self.url,
             data=json.dumps(request_json),
