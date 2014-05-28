@@ -137,10 +137,13 @@ class ZabbixAPIObjectClass(object):
         def fn(*args, **kwargs):
             if args and kwargs:
                 raise TypeError("Found both args and kwargs")
-
+            if args and len(args) == 1 and type(args[0]) == dict:
+                req_args = args[0]
+            else:
+                req_args = args or kwargs
             return self.parent.do_request(
                 '{0}.{1}'.format(self.name, attr),
-                args or kwargs
+                req_args
             )['result']
 
         return fn
