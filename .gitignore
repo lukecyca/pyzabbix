@@ -1,1 +1,3 @@
 build
+dist/
+pyzabbix.egg-info/
