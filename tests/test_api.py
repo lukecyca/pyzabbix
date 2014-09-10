@@ -28,7 +28,6 @@ class TestPyZabbix(unittest.TestCase):
                 'jsonrpc': '2.0',
                 'method': 'user.login',
                 'params': {'user': 'mylogin', 'password': 'mypass'},
-                'auth': '',
                 'id': 0,
             })
         )
