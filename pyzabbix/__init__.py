@@ -76,13 +76,22 @@ class ZabbixAPI(object):
         return self.apiinfo.version()
 
     def do_request(self, method, params=None):
-        request_json = {
-            'jsonrpc': '2.0',
-            'method': method,
-            'params': params or {},
-            'auth': self.auth,
-            'id': self.id,
-        }
+        if self.auth:
+                request_json = {
+                    'jsonrpc': '2.0',
+                    'method': method,
+                    'params': params or {},
+                    'auth': self.auth,
+                    'id': self.id,
+                }
+        else:
+                 request_json = {
+                    'jsonrpc': '2.0',
+                    'method': method,
+                    'params': params or {},
+                    'id': self.id,
+                }
+
 
         logger.debug("Sending: %s", json.dumps(request_json,
                                                indent=4,
