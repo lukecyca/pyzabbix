@@ -3,6 +3,8 @@
 **PyZabbix** is a Python module for working with the [Zabbix API](https://www.zabbix.com/documentation/2.0/manual/appendix/api/api).
 
 [![Build Status](https://travis-ci.org/lukecyca/pyzabbix.png?branch=master)](https://travis-ci.org/lukecyca/pyzabbix)
+[![PyPi version](https://pypip.in/v/pyzabbix/badge.png)](https://pypi.python.org/pypi/pyzabbix/)
+[![PyPi downloads](https://pypip.in/d/pyzabbix/badge.png)](https://pypi.python.org/pypi/pyzabbix/)
 
 ## Documentation
 
