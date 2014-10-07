@@ -24,12 +24,14 @@ class ZabbixAPI(object):
     def __init__(self,
                  server='http://localhost/zabbix',
                  session=None,
-                 use_authenticate=False):
+                 use_authenticate=False,
+                 timeout=None):
         """
         Parameters:
             server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
             session: optional pre-configured requests.Session instance
             use_authenticate: Use old (Zabbix 1.8) style authentication
+            timeout: optional connect and read timeout in seconds, default: None (if you're using Requests >= 2.4 you can set it as tuple: "(connect, read)" which is used to set individual connect and read timeouts.)
         """
 
         if session:
@@ -46,6 +48,8 @@ class ZabbixAPI(object):
         self.use_authenticate = use_authenticate
         self.auth = ''
         self.id = 0
+
+        self.timeout = timeout
 
         self.url = server + '/api_jsonrpc.php'
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
@@ -93,6 +97,7 @@ class ZabbixAPI(object):
         response = self.session.post(
             self.url,
             data=json.dumps(request_json),
+            timeout=self.timeout
         )
         logger.debug("Response Code: %s", str(response.status_code))
 
