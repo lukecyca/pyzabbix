@@ -15,18 +15,21 @@ ZABBIX_SERVER = 'https://zabbix.example.com'
 
 zapi = ZabbixAPI(ZABBIX_SERVER)
 
+# Disable SSL certificate verification
+zapi.session.verify = False
+
 # Login to the Zabbix API
-zapi.login('api_username', 'api_password')
+zapi.login('Admin', 'zabbix')
 
-# Loop through all hosts
-for h in zapi.host.get(extendoutput=True):
+# Loop through all hosts interfaces, getting only "main" interfaces of type "agent"
+for h in zapi.hostinterface.get(output=["dns","ip","useip"],selectHosts=["host"],filter={"main":1,"type":1}):
     # Make sure the hosts are named according to their FQDN
-    if h['dns'] != h['host']:
-        print('Warning: %s has dns "%s"' % (h['host'], h['dns']))
+    if h['dns'] != h['hosts'][0]['host']:
+        print('Warning: %s has dns "%s"' % (h['hosts'][0]['host'], h['dns']))
 
-    # Make sure they are using hostnames to connect rather than IPs
+    # Make sure they are using hostnames to connect rather than IPs (could be also filtered in the get request)
     if h['useip'] == '1':
-        print('%s is using IP instead of hostname. Skipping.' % h['host'])
+        print('%s is using IP instead of hostname. Skipping.' % h['hosts'][0]['host'])
         continue
 
     # Do a DNS lookup for the host's DNS name
@@ -40,13 +43,13 @@ for h in zapi.host.get(extendoutput=True):
     # Check whether the looked-up IP matches the one stored in the host's IP
     # field
     if actual_ip != h['ip']:
-        print("%s has the wrong IP: %s. Changing it to: %s" % (h['host'],
+        print("%s has the wrong IP: %s. Changing it to: %s" % (h['hosts'][0]['host'],
                                                                h['ip'],
                                                                actual_ip))
 
         # Set the host's IP field to match what the DNS lookup said it should
         # be
         try:
-            zapi.host.update(hostid=h['hostid'], ip=actual_ip)
+            zapi.hostinterface.update(interfaceid=h['interfaceid'], ip=actual_ip)
         except ZabbixAPIException as e:
             print(e)
