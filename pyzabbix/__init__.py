@@ -87,7 +87,8 @@ class ZabbixAPI(object):
             'id': self.id,
         }
 
-        if self.auth:
+        # We don't have to pass the auth token if asking for the apiinfo.version
+        if self.auth and method != 'apiinfo.version':
             request_json['auth'] = self.auth
 
 
