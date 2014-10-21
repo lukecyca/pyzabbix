@@ -23,13 +23,13 @@ class TestPyZabbix(unittest.TestCase):
 
         # Check request
         self.assertEqual(
-            httpretty.last_request().body,
-            json.dumps({
+            json.loads(httpretty.last_request().body.decode('utf-8')),
+            {
                 'jsonrpc': '2.0',
                 'method': 'user.login',
                 'params': {'user': 'mylogin', 'password': 'mypass'},
                 'id': 0,
-            })
+            }
         )
         self.assertEqual(
             httpretty.last_request().headers['content-type'],
@@ -61,14 +61,14 @@ class TestPyZabbix(unittest.TestCase):
 
         # Check request
         self.assertEqual(
-            httpretty.last_request().body,
-            json.dumps({
+            json.loads(httpretty.last_request().body.decode('utf-8')),
+            {
                 'jsonrpc': '2.0',
                 'method': 'host.get',
                 'params': {},
                 'auth': '123',
                 'id': 0,
-            })
+            }
         )
 
         # Check response
@@ -97,14 +97,14 @@ class TestPyZabbix(unittest.TestCase):
 
         # Check request
         self.assertEqual(
-            httpretty.last_request().body,
-            json.dumps({
+            json.loads(httpretty.last_request().body.decode('utf-8')),
+            {
                 'jsonrpc': '2.0',
                 'method': 'host.delete',
                 'params': ["22982", "22986"],
                 'auth': '123',
                 'id': 0,
-            })
+            }
         )
 
         # Check response
