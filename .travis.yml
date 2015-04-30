@@ -6,6 +6,5 @@ python:
   - "3.3"
   - "3.4"
 install:
-  - pip install . --use-mirrors
-  - pip install nose httpretty
+  - pip install requests
 script:  python setup.py nosetests
