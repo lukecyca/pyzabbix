@@ -26,4 +26,7 @@ setup(
         "Topic :: System :: Systems Administration",
     ],
     packages=["pyzabbix"],
+    tests_require=[
+        "httpretty<0.8.7",
+    ],
 )
