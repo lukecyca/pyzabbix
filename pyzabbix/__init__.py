@@ -42,7 +42,8 @@ class ZabbixAPI(object):
         # Default headers for all requests
         self.session.headers.update({
             'Content-Type': 'application/json-rpc',
-            'User-Agent': 'python/pyzabbix'
+            'User-Agent': 'python/pyzabbix',
+            'Cache-Control': 'no-cache'
         })
 
         self.use_authenticate = use_authenticate
