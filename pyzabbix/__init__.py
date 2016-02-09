@@ -26,7 +26,8 @@ class ZabbixAPI(object):
                  server='http://localhost/zabbix',
                  session=None,
                  use_authenticate=False,
-                 timeout=None):
+                 timeout=None,
+                 verify=True):
         """
         Parameters:
             server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
@@ -52,6 +53,7 @@ class ZabbixAPI(object):
         self.id = 0
 
         self.timeout = timeout
+        self.verify = verify
 
         self.url = server + '/api_jsonrpc.php'
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
@@ -100,7 +102,8 @@ class ZabbixAPI(object):
         response = self.session.post(
             self.url,
             data=json.dumps(request_json),
-            timeout=self.timeout
+            timeout=self.timeout,
+            verify=self.verify
         )
         logger.debug("Response Code: %s", str(response.status_code))
 
