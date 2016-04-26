@@ -98,8 +98,6 @@ Response Body: {
 >>>
 ```
 
-Further info on [PyZabbix Wiki](https://wiki.github.com/lukecyca/pyzabbix/)
-
 ## License ##
 LGPL 2.1   http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
