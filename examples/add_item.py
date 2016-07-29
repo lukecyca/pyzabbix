@@ -15,13 +15,13 @@ zapi.login('Admin', 'zabbix')
 
 host_name = 'example.com'
 
-hosts = zapi.host.get(filter={"host": host_name},selectInterfaces=["interfaceid"])
+hosts = zapi.host.get(filter={"host": host_name}, selectInterfaces=["interfaceid"])
 if hosts:
     host_id = hosts[0]["hostid"]
     print("Found host id {0}".format(host_id))
 
     try:
-        item=zapi.item.create(
+        item = zapi.item.create(
             hostid=host_id,
             name='Used disk space on $1 in %',
             key_='vfs.fs.size[/,pused]',
@@ -33,6 +33,6 @@ if hosts:
     except ZabbixAPIException as e:
         print(e)
         sys.exit()
-    print("Added item with itemid {0} to host: {1}".format(item["itemids"][0],host_name))
+    print("Added item with itemid {0} to host: {1}".format(item["itemids"][0], host_name))
 else:
     print("No hosts found")

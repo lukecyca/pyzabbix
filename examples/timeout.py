@@ -14,10 +14,10 @@ ZABBIX_SERVER = 'https://zabbix.example.com'
 TIMEOUT = 3.5
 
 # You can define the timeout while creating the ZabbixAPI object:
-zapi = ZabbixAPI(ZABBIX_SERVER,timeout=TIMEOUT)
+zapi = ZabbixAPI(ZABBIX_SERVER, timeout=TIMEOUT)
 
 # Login to the Zabbix API
 zapi.login('api_username', 'api_password')
 
 # Or you can re-define it after
-zapi.timeout=TIMEOUT
+zapi.timeout = TIMEOUT
