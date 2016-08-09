@@ -26,7 +26,8 @@ class ZabbixAPI(object):
                  server='http://localhost/zabbix',
                  session=None,
                  use_authenticate=False,
-                 timeout=None):
+                 timeout=None,
+                 debug=True):
         """
         Parameters:
             server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
@@ -52,7 +53,7 @@ class ZabbixAPI(object):
         self.id = 0
 
         self.timeout = timeout
-
+        self.debug = debug 
         self.url = server + '/api_jsonrpc.php'
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
@@ -93,8 +94,8 @@ class ZabbixAPI(object):
         if self.auth and method != 'apiinfo.version':
             request_json['auth'] = self.auth
 
-
-        logger.debug("Sending: %s", json.dumps(request_json,
+        if self.debug:
+            logger.debug("Sending: %s", json.dumps(request_json,
                                                indent=4,
                                                separators=(',', ': ')))
         response = self.session.post(
@@ -117,7 +118,8 @@ class ZabbixAPI(object):
             raise ZabbixAPIException(
                 "Unable to parse json: %s" % response.text
             )
-        logger.debug("Response Body: %s", json.dumps(response_json,
+        if self.debug:
+            logger.debug("Response Body: %s", json.dumps(response_json,
                                                      indent=4,
                                                      separators=(',', ': ')))
 
