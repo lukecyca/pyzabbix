@@ -26,7 +26,7 @@ class ZabbixAPI(object):
                  server='http://localhost/zabbix',
                  session=None,
                  use_authenticate=False,
-                 timeout=None
+                 timeout=None,
                  debug=True):
         """
         Parameters:
