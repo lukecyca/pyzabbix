@@ -76,4 +76,4 @@ for file in files:
         try:
             zapi.confimport('xml', template, rules)
         except ZabbixAPIException as e:
-            print e
+            print(e)

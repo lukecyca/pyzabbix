@@ -59,7 +59,10 @@ class ZabbixAPI(object):
     def login(self, user='', password=''):
         """Convenience method for calling user.authenticate and storing the resulting auth token
            for further commands.
-           If use_authenticate is set, it uses the older (Zabbix 1.8) authentication command"""
+           If use_authenticate is set, it uses the older (Zabbix 1.8) authentication command
+           :param password: Password used to login into Zabbix
+           :param user: Username used to login into Zabbix
+        """
 
         # If we have an invalid auth token, we are not allowed to send a login
         # request. Clear it before trying.
@@ -69,13 +72,17 @@ class ZabbixAPI(object):
         else:
             self.auth = self.user.login(user=user, password=password)
 
-    def confimport(self, format='', source='', rules=''):
+    def confimport(self, confformat='', source='', rules=''):
         """Alias for configuration.import because it clashes with
-           Python's import reserved keyword"""
+           Python's import reserved keyword
+           :param rules:
+           :param source:
+           :param confformat:
+        """
 
         return self.do_request(
             method="configuration.import",
-            params={"format": format, "source": source, "rules": rules}
+            params={"format": confformat, "source": source, "rules": rules}
         )['result']
 
     def api_version(self):
@@ -92,7 +99,6 @@ class ZabbixAPI(object):
         # We don't have to pass the auth token if asking for the apiinfo.version
         if self.auth and method != 'apiinfo.version':
             request_json['auth'] = self.auth
-
 
         logger.debug("Sending: %s", json.dumps(request_json,
                                                indent=4,
@@ -124,7 +130,7 @@ class ZabbixAPI(object):
         self.id += 1
 
         if 'error' in response_json:  # some exception
-            if 'data' not in response_json['error']: # some errors don't contain 'data': workaround for ZBX-9340
+            if 'data' not in response_json['error']:  # some errors don't contain 'data': workaround for ZBX-9340
                 response_json['error']['data'] = "No data"
             msg = "Error {code}: {message}, {data}".format(
                 code=response_json['error']['code'],

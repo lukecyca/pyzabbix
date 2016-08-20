@@ -7,7 +7,6 @@ and fixes it if required.
 """
 
 import socket
-from getpass import getpass
 from pyzabbix import ZabbixAPI, ZabbixAPIException
 
 # The hostname at which the Zabbix web interface is available
@@ -22,7 +21,7 @@ zapi.session.verify = False
 zapi.login('Admin', 'zabbix')
 
 # Loop through all hosts interfaces, getting only "main" interfaces of type "agent"
-for h in zapi.hostinterface.get(output=["dns","ip","useip"],selectHosts=["host"],filter={"main":1,"type":1}):
+for h in zapi.hostinterface.get(output=["dns", "ip", "useip"], selectHosts=["host"], filter={"main": 1, "type": 1}):
     # Make sure the hosts are named according to their FQDN
     if h['dns'] != h['hosts'][0]['host']:
         print('Warning: %s has dns "%s"' % (h['hosts'][0]['host'], h['dns']))
