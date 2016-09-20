@@ -25,10 +25,10 @@ from pyzabbix import ZabbixAPI
 
 zapi = ZabbixAPI("http://zabbixserver.example.com")
 zapi.login("zabbix user", "zabbix pass")
-print ( "Connected to Zabbix API Version %s" % zapi.api_version() )
+print("Connected to Zabbix API Version %s" % zapi.api_version())
 
 for h in zapi.host.get(output="extend"):
-    print (h['hostid'])
+    print(h['hostid'])
 ```
 
 Refer to the [Zabbix API Documentation](https://www.zabbix.com/documentation/3.0/manual/api/reference) and the [PyZabbix Examples](https://github.com/lukecyca/pyzabbix/tree/master/examples) for more information.
