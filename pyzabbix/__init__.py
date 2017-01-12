@@ -2,7 +2,7 @@ from __future__ import unicode_literals
 import logging
 import requests
 import json
-
+import types
 
 class _NullHandler(logging.Handler):
     def emit(self, record):
@@ -89,6 +89,9 @@ class ZabbixAPI(object):
         return self.apiinfo.version()
 
     def do_request(self, method, params=None):
+        if ( type(params) is types.TupleType):
+            if ( type(params[0]) is types.DictType):
+                params = params[0]
         request_json = {
             'jsonrpc': '2.0',
             'method': method,
