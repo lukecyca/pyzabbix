@@ -48,7 +48,7 @@ class ZabbixAPI(object):
         })
 
         self.use_authenticate = use_authenticate
-        self.auth = ''
+        self.auth = None
         self.id = 0
 
         self.timeout = timeout
