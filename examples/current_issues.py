@@ -19,7 +19,7 @@ triggers = zapi.trigger.get(only_true=1,
                             active=1,
                             output='extend',
                             expandDescription=1,
-                            expandData='host',
+                            selectHosts=['host'],
                             )
 
 # Do another query to find out which issues are Unacknowledged
@@ -29,7 +29,7 @@ unack_triggers = zapi.trigger.get(only_true=1,
                                   active=1,
                                   output='extend',
                                   expandDescription=1,
-                                  expandData='host',
+                                  selectHosts=['host'],
                                   withLastEventUnacknowledged=1,
                                   )
 unack_trigger_ids = [t['triggerid'] for t in unack_triggers]
@@ -40,7 +40,7 @@ for t in triggers:
 # Print a list containing only "tripped" triggers
 for t in triggers:
     if int(t['value']) == 1:
-        print("{0} - {1} {2}".format(t['host'],
+        print("{0} - {1} {2}".format(t['hosts'][0]['host'],
                                      t['description'],
                                      '(Unack)' if t['unacknowledged'] else '')
               )
