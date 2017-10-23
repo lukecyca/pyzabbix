@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 import logging
 import requests
 import json
@@ -132,7 +131,7 @@ class ZabbixAPI(object):
         if 'error' in response_json:  # some exception
             if 'data' not in response_json['error']:  # some errors don't contain 'data': workaround for ZBX-9340
                 response_json['error']['data'] = "No data"
-            msg = "Error {code}: {message}, {data}".format(
+            msg = u"Error {code}: {message}, {data}".format(
                 code=response_json['error']['code'],
                 message=response_json['error']['message'],
                 data=response_json['error']['data']
