@@ -4,10 +4,9 @@
 
 [![Build Status](https://travis-ci.org/lukecyca/pyzabbix.png?branch=master)](https://travis-ci.org/lukecyca/pyzabbix)
 [![PyPi version](https://img.shields.io/pypi/v/pyzabbix.svg)](https://pypi.python.org/pypi/pyzabbix/)
-[![PyPi downloads](https://img.shields.io/pypi/dm/pyzabbix.svg)](https://pypi.python.org/pypi/pyzabbix/)
 
 ## Requirements
-* Tested against Zabbix 1.8 through 3.0
+* Tested against Zabbix 1.8 through 3.4
 
 ## Documentation ##
 ### Getting Started
