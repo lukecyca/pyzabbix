@@ -71,6 +71,10 @@ class ZabbixAPI(object):
         else:
             self.auth = self.user.login(user=user, password=password)
 
+    def check_authentication(self):
+        """Convenience method for calling user.checkAuthentication of the current session"""
+        return self.user.checkAuthentication(sessionid=self.auth)
+
     def confimport(self, confformat='', source='', rules=''):
         """Alias for configuration.import because it clashes with
            Python's import reserved keyword
@@ -95,8 +99,8 @@ class ZabbixAPI(object):
             'id': self.id,
         }
 
-        # We don't have to pass the auth token if asking for the apiinfo.version
-        if self.auth and method != 'apiinfo.version':
+        # We don't have to pass the auth token if asking for the apiinfo.version or user.checkAuthentication
+        if self.auth and method != 'apiinfo.version' and method != 'user.checkAuthentication':
             request_json['auth'] = self.auth
 
         logger.debug("Sending: %s", json.dumps(request_json,
