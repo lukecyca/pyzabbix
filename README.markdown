@@ -6,7 +6,7 @@
 [![PyPi version](https://img.shields.io/pypi/v/pyzabbix.svg)](https://pypi.python.org/pypi/pyzabbix/)
 
 ## Requirements
-* Tested against Zabbix 1.8 through 3.4
+* Tested against Zabbix 1.8 through 4.0
 
 ## Documentation ##
 ### Getting Started
