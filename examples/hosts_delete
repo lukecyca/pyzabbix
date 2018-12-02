@@ -1,0 +1,32 @@
+rom pyzabbix import ZabbixAPI
+import socket
+import argparse
+
+
+def main():
+    parser = argparse.ArgumentParser(description='This script Delete hosts from Zabbix')
+    parser.add_argument('-d', '--del_servers', nargs='+', help='<Required> Set flag', required=True)
+    parser.add_argument('-u', '--user', type=str, default='USER')
+    parser.add_argument('--host', type=str, default='ZABBIX_SRV')
+    parser.add_argument('-p', '--password', type=str, )
+    args = parser.parse_args()
+
+    zapi = ZabbixAPI("http://" + args.host)
+    zapi.login(args.user, args.password)
+    host = socket.gethostname()
+    print "Connected to Zabbix API Version {0}, This was sent from {1} \n".format(zapi.api_version(), host)
+
+    try:
+        for host in args.del_servers:
+            print "Trying to Delete: {0}".format(host)
+            hostid = zapi.do_request('host.get', {"output": "extend", "filter": {"name": host}})
+            hostid = hostid[u'result'][0][u'hostid']
+            print "Host_id of {0} is: {1}".format(host, hostid)
+            zapi.do_request('host.delete', params=[hostid])
+            print "{0} was deleted from Zabbix".format(host)
+    except IndexError:
+        raise Exception("Host was not found in Zabbix")
+
+
+if __name__ == "__main__":
+    main()
