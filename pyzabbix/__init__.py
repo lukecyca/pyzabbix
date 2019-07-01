@@ -55,6 +55,15 @@ class ZabbixAPI(object):
         self.url = server + '/api_jsonrpc.php'
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        if isinstance(exception_value, (ZabbixAPIException, type(None))):
+            if self.check_authentication():
+                self.user.logout()
+            return True
+
     def login(self, user='', password=''):
         """Convenience method for calling user.authenticate and storing the resulting auth token
            for further commands.
