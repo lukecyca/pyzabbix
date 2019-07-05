@@ -52,7 +52,7 @@ class ZabbixAPI(object):
 
         self.timeout = timeout
 
-        self.url = server + '/api_jsonrpc.php'
+        self.url = server + '/api_jsonrpc.php' if not server.endswith('/api_jsonrpc.php') else server
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
     def login(self, user='', password=''):
