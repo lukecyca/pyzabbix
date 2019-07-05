@@ -75,6 +75,14 @@ class ZabbixAPI(object):
         """Convenience method for calling user.checkAuthentication of the current session"""
         return self.user.checkAuthentication(sessionid=self.auth)
 
+    @property
+    def is_authenticated(self):
+        try:
+            self.user.checkAuthentication(sessionid=self.auth)
+        except ZabbixAPIException:
+            return False
+        return True
+
     def confimport(self, confformat='', source='', rules=''):
         """Alias for configuration.import because it clashes with
            Python's import reserved keyword
