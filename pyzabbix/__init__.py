@@ -52,7 +52,7 @@ class ZabbixAPI(object):
 
         self.timeout = timeout
 
-        self.url = server + '/api_jsonrpc.php'
+        self.url = server + '/api_jsonrpc.php' if not server.endswith('/api_jsonrpc.php') else server
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
     def login(self, user='', password=''):
@@ -74,6 +74,14 @@ class ZabbixAPI(object):
     def check_authentication(self):
         """Convenience method for calling user.checkAuthentication of the current session"""
         return self.user.checkAuthentication(sessionid=self.auth)
+
+    @property
+    def is_authenticated(self):
+        try:
+            self.user.checkAuthentication(sessionid=self.auth)
+        except ZabbixAPIException:
+            return False
+        return True
 
     def confimport(self, confformat='', source='', rules=''):
         """Alias for configuration.import because it clashes with
