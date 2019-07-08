@@ -109,3 +109,21 @@ class TestPyZabbix(unittest.TestCase):
 
         # Check response
         self.assertEqual(set(result["itemids"]), set(["22982", "22986"]))
+
+
+    @httpretty.activate
+    def test_login_with_context(self):
+        httpretty.register_uri(
+            httpretty.POST,
+            "http://example.com/api_jsonrpc.php",
+            body=json.dumps({
+                "jsonrpc": "2.0",
+                "result": "0424bd59b807674191e7d77572075f33",
+                "id": 0
+            }),
+        )
+
+        with ZabbixAPI('http://example.com') as zapi:
+            zapi.login('mylogin', 'mypass')
+            self.assertEqual(zapi.auth, "0424bd59b807674191e7d77572075f33")
+
