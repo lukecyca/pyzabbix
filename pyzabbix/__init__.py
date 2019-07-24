@@ -57,6 +57,7 @@ class ZabbixAPI(object):
         self.id = 0
 
         self.timeout = timeout
+        self.retryCount = 1
 
         self.url = server + '/api_jsonrpc.php' if not server.endswith('/api_jsonrpc.php') else server
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
@@ -69,6 +70,9 @@ class ZabbixAPI(object):
             if self.check_authentication():
                 self.user.logout()
             return True
+
+    def setRetryCount(self, count):
+        self.retryCount = count
 
     def login(self, user='', password=''):
         """Convenience method for calling user.authenticate and storing the resulting auth token
@@ -115,6 +119,17 @@ class ZabbixAPI(object):
         return self.apiinfo.version()
 
     def do_request(self, method, params=None):
+        i = 1
+        while True:
+            try:
+                return self.do_request_loop(method, params)
+            except ZabbixAPIException as e:
+                logger.fatal("Attempt %d failed for %s, trying again.", i, method)
+                i = i + 1
+                if i > self.retryCount: raise e
+                continue
+
+    def do_request_loop(self, method, params=None):
         request_json = {
             'jsonrpc': '2.0',
             'method': method,
