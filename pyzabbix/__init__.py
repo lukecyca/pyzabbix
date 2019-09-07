@@ -66,7 +66,7 @@ class ZabbixAPI(object):
 
     def __exit__(self, exception_type, exception_value, traceback):
         if isinstance(exception_value, (ZabbixAPIException, type(None))):
-            if self.check_authentication():
+            if self.is_authenticated:
                 self.user.logout()
             return True
 
