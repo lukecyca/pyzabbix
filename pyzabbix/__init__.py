@@ -23,7 +23,10 @@ class ZabbixAPIException(Exception):
          -32300 - Transport error
          -32500 - Application error
     """
-    pass
+    def __init__(self, *args, **kwargs):
+        super(ZabbixAPIException, self).__init__(*args)
+
+        self.error = kwargs.get("error", None)
 
 
 class ZabbixAPI(object):
@@ -163,7 +166,7 @@ class ZabbixAPI(object):
                 message=response_json['error']['message'],
                 data=response_json['error']['data']
             )
-            raise ZabbixAPIException(msg, response_json['error']['code'])
+            raise ZabbixAPIException(msg, response_json['error']['code'], error=response_json['error'])
 
         return response_json
 
