@@ -115,6 +115,10 @@ class ZabbixAPI(object):
         return self.apiinfo.version()
 
     def do_request(self, method, params=None):
+
+        if isinstance(params, tuple):
+            params = list(*params)
+
         request_json = {
             'jsonrpc': '2.0',
             'method': method,
