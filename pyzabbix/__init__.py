@@ -117,7 +117,7 @@ class ZabbixAPI(object):
     def do_request(self, method, params=None):
 
         if isinstance(params, tuple):
-            params = list(*params)
+            params = [i for i in params[0]]
 
         request_json = {
             'jsonrpc': '2.0',
