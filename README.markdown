@@ -1,12 +1,12 @@
 # PyZabbix #
 
-**PyZabbix** is a Python module for working with the [Zabbix API](https://www.zabbix.com/documentation/3.0/manual/api/reference).
+**PyZabbix** is a Python module for working with the [Zabbix API](https://www.zabbix.com/documentation/current/manual/api/reference).
 
 [![Build Status](https://travis-ci.org/lukecyca/pyzabbix.png?branch=master)](https://travis-ci.org/lukecyca/pyzabbix)
 [![PyPi version](https://img.shields.io/pypi/v/pyzabbix.svg)](https://pypi.python.org/pypi/pyzabbix/)
 
 ## Requirements
-* Tested against Zabbix 1.8 through 4.0
+* Tested against Zabbix 1.8 through 5.0
 
 ## Documentation ##
 ### Getting Started
@@ -30,7 +30,7 @@ for h in zapi.host.get(output="extend"):
     print(h['hostid'])
 ```
 
-Refer to the [Zabbix API Documentation](https://www.zabbix.com/documentation/3.0/manual/api/reference) and the [PyZabbix Examples](https://github.com/lukecyca/pyzabbix/tree/master/examples) for more information.
+Refer to the [Zabbix API Documentation](https://www.zabbix.com/documentation/current/manual/api/reference) and the [PyZabbix Examples](https://github.com/lukecyca/pyzabbix/tree/master/examples) for more information.
 
 ### Customizing the HTTP request
 PyZabbix uses the [requests](https://requests.readthedocs.io/en/master/) library for HTTP. You can customize the request parameters by configuring the [requests Session](https://requests.readthedocs.io/en/master/user/advanced/#session-objects) object used by PyZabbix.
