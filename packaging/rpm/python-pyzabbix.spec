@@ -17,7 +17,7 @@
 
 
 Name:           python-pyzabbix
-Version:        0.7.4
+Version:        0.8.2
 Release:        1
 Url:            http://github.com/lukecyca/pyzabbix
 Summary:        Zabbix API Python interface
@@ -32,7 +32,7 @@ Requires:       python-requests >= 1.0
 %description
 PyZabbix is a Python module for working with the Zabbix API.
 
-Tested against Zabbix 1.8 through 3.0.
+Tested against Zabbix 1.8 through 5.0.
 
 %prep
 %setup -q -n pyzabbix-%{version}

@@ -5,7 +5,7 @@ with open("README.markdown", "r") as fh:
 
 setup(
     name="pyzabbix",
-    version="0.8.1",
+    version="0.8.2",
     install_requires=[
         "requests>=1.0",
     ],
@@ -19,9 +19,11 @@ setup(
     url="http://github.com/lukecyca/pyzabbix",
     classifiers=[
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.6",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
+	"Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3,5",
+	"Programming Language :: Python :: 3.6",
+	"Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
