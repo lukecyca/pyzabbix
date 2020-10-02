@@ -1,4 +1,6 @@
+=============
 # PyZabbix #
+=============
 
 **PyZabbix** is a Python module for working with the [Zabbix API](https://www.zabbix.com/documentation/current/manual/api/reference).
 
