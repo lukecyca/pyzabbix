@@ -19,7 +19,7 @@ class TestPyZabbix(unittest.TestCase):
             }),
         )
 
-        zapi = ZabbixAPI('http://example.com')
+        zapi = ZabbixAPI('http://example.com', detect_version=False)
         zapi.login('mylogin', 'mypass')
 
         # Check request
@@ -56,7 +56,7 @@ class TestPyZabbix(unittest.TestCase):
             }),
         )
 
-        zapi = ZabbixAPI('http://example.com')
+        zapi = ZabbixAPI('http://example.com', detect_version=False)
         zapi.auth = "123"
         result = zapi.host.get()
 
@@ -92,7 +92,7 @@ class TestPyZabbix(unittest.TestCase):
             }),
         )
 
-        zapi = ZabbixAPI('http://example.com')
+        zapi = ZabbixAPI('http://example.com', detect_version=False)
         zapi.auth = "123"
         result = zapi.host.delete("22982", "22986")
 
@@ -124,7 +124,7 @@ class TestPyZabbix(unittest.TestCase):
             }),
         )
 
-        with ZabbixAPI('http://example.com') as zapi:
+        with ZabbixAPI('http://example.com', detect_version=False) as zapi:
             zapi.login('mylogin', 'mypass')
             self.assertEqual(zapi.auth, "0424bd59b807674191e7d77572075f33")
 
@@ -142,4 +142,4 @@ class TestPyZabbix(unittest.TestCase):
 
         zapi_detect = ZabbixAPI('http://example.com')
         self.assertEqual(zapi_detect.api_version(), '4.0.0')
-        self.assertEqual(zapi_detect._version, semantic_version.Version('4.0.0'))
+        self.assertEqual(zapi_detect.version, semantic_version.Version('4.0.0'))
