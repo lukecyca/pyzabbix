@@ -8,6 +8,7 @@ setup(
     version="0.8.2",
     install_requires=[
         "requests>=1.0",
+        "semantic-version>=2.8"
     ],
     description="Zabbix API Python interface",
     long_description=long_description,

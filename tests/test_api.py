@@ -2,6 +2,7 @@ import unittest
 import httpretty
 import json
 from pyzabbix import ZabbixAPI
+import semantic_version
 
 
 class TestPyZabbix(unittest.TestCase):
@@ -127,3 +128,18 @@ class TestPyZabbix(unittest.TestCase):
             zapi.login('mylogin', 'mypass')
             self.assertEqual(zapi.auth, "0424bd59b807674191e7d77572075f33")
 
+    @httpretty.activate
+    def test_detecting_version(self):
+        httpretty.register_uri(
+            httpretty.POST,
+            "http://example.com/api_jsonrpc.php",
+            body=json.dumps({
+                "jsonrpc": "2.0",
+                "result": "4.0.0",
+                "id": 0
+            }),
+        )
+
+        zapi_detect = ZabbixAPI('http://example.com')
+        self.assertEqual(zapi_detect.api_version(), '4.0.0')
+        self.assertEqual(zapi_detect._version, semantic_version.Version('4.0.0'))
