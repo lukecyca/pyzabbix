@@ -26,7 +26,7 @@ open (arquivo, newline='', encoding='utf-8')
 
 # Zabbix server
 
-zapi = ZabbixAPI("http://<server_IP>/zabbix")
+zapi = ZabbixAPI("http://30.0.0.47/zabbix")
 
 # Login com o Zabbix API
 
