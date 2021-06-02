@@ -24,12 +24,13 @@ from pyzabbix import ZabbixAPI
 
 zapi = ZabbixAPI("http://zabbixserver.example.com")
 zapi.login("zabbix user", "zabbix pass")
+# You can also authenticate using an API token instead of user/pass with Zabbix >= 5.4
+# zapi.login(api_token='xxxxx')
 print("Connected to Zabbix API Version %s" % zapi.api_version())
 
 for h in zapi.host.get(output="extend"):
     print(h['hostid'])
 ```
-
 Refer to the [Zabbix API Documentation](https://www.zabbix.com/documentation/current/manual/api/reference) and the [PyZabbix Examples](https://github.com/lukecyca/pyzabbix/tree/master/examples) for more information.
 
 ### Customizing the HTTP request
@@ -57,6 +58,9 @@ zapi.timeout = 5.1
 
 # Login (in case of HTTP Auth, only the username is needed, the password, if passed, will be ignored)
 zapi.login("http user", "http password")
+
+# You can also authenticate using an API token instead of user/pass with Zabbix >= 5.4
+# zapi.login(api_token='xxxxx')
 ```
 
 ### Enabling debug logging
@@ -75,6 +79,10 @@ log.setLevel(logging.DEBUG)
 
 zapi = ZabbixAPI("http://zabbixserver.example.com")
 zapi.login('admin','password')
+
+# You can also authenticate using an API token instead of user/pass with Zabbix >= 5.4
+# zapi.login(api_token='xxxxx')
+
 ```
 The expected output is as following:
 
