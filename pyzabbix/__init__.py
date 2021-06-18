@@ -56,6 +56,7 @@ class ZabbixAPI(object):
         })
 
         self.use_authenticate = use_authenticate
+        self.use_api_token = False
         self.auth = ''
         self.id = 0
 
@@ -69,17 +70,25 @@ class ZabbixAPI(object):
 
     def __exit__(self, exception_type, exception_value, traceback):
         if isinstance(exception_value, (ZabbixAPIException, type(None))):
-            if self.is_authenticated:
+            if self.is_authenticated and not self.use_api_token:
+                """ Logout the user if they are authenticated using username + password."""
                 self.user.logout()
             return True
 
-    def login(self, user='', password=''):
+    def login(self, user='', password='', api_token=None):
         """Convenience method for calling user.authenticate and storing the resulting auth token
            for further commands.
            If use_authenticate is set, it uses the older (Zabbix 1.8) authentication command
            :param password: Password used to login into Zabbix
            :param user: Username used to login into Zabbix
+           :param api_token: API Token to authenticate with
         """
+
+        # If the API token is explicitly provided, use this instead.
+        if api_token is not None:
+            self.use_api_token = True
+            self.auth = api_token
+            return
 
         # If we have an invalid auth token, we are not allowed to send a login
         # request. Clear it before trying.
@@ -90,11 +99,18 @@ class ZabbixAPI(object):
             self.auth = self.user.login(user=user, password=password)
 
     def check_authentication(self):
+        if self.use_api_token:
+            """We cannot use this call using an API Token"""
+            return True
         """Convenience method for calling user.checkAuthentication of the current session"""
         return self.user.checkAuthentication(sessionid=self.auth)
 
     @property
     def is_authenticated(self):
+        if self.use_api_token:
+            """We cannot use this call using an API Token"""
+            return True
+
         try:
             self.user.checkAuthentication(sessionid=self.auth)
         except ZabbixAPIException:
