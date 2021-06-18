@@ -1,6 +1,7 @@
 import logging
 import requests
 import json
+import semantic_version
 
 
 class _NullHandler(logging.Handler):
@@ -34,7 +35,8 @@ class ZabbixAPI(object):
                  server='http://localhost/zabbix',
                  session=None,
                  use_authenticate=False,
-                 timeout=None):
+                 timeout=None,
+                 detect_version=True):
         """
         Parameters:
             server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
@@ -64,6 +66,13 @@ class ZabbixAPI(object):
 
         self.url = server + '/api_jsonrpc.php' if not server.endswith('/api_jsonrpc.php') else server
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
+
+        self.version = ''
+        if detect_version:
+            self.version = semantic_version.Version(
+                self.api_version()
+            )
+            logger.info("Zabbix API version is: %s", self.api_version())
 
     def __enter__(self):
         return self
@@ -95,6 +104,8 @@ class ZabbixAPI(object):
         self.auth = ''
         if self.use_authenticate:
             self.auth = self.user.authenticate(user=user, password=password)
+        elif self.version and self.version >= semantic_version.Version('5.4.0'):
+            self.auth = self.user.login(username=user, password=password)
         else:
             self.auth = self.user.login(user=user, password=password)
 
