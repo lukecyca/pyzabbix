@@ -5,7 +5,7 @@ with open("README.markdown", "r") as fh:
 
 setup(
     name="pyzabbix",
-    version="0.8.2",
+    version="1.0.0",
     install_requires=[
         "requests>=1.0",
         "semantic-version>=2.8"
