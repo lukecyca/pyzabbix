@@ -142,4 +142,3 @@ class TestPyZabbix(unittest.TestCase):
 
         zapi_detect = ZabbixAPI('http://example.com')
         self.assertEqual(zapi_detect.api_version(), '4.0.0')
-        self.assertEqual(zapi_detect.version, semantic_version.Version('4.0.0'))
