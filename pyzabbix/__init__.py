@@ -94,7 +94,7 @@ class ZabbixAPI(object):
             self.version = semantic_version.Version(
                 self.api_version()
             )
-            logger.info("Zabbix API version is: %s", self.api_version())
+            logger.info("Zabbix API version is: %s", str(self.version))
 
         # If the API token is explicitly provided, use this instead.
         if api_token is not None:
