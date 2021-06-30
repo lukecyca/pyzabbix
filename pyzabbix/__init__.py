@@ -43,6 +43,7 @@ class ZabbixAPI(object):
             session: optional pre-configured requests.Session instance
             use_authenticate: Use old (Zabbix 1.8) style authentication
             timeout: optional connect and read timeout in seconds, default: None (if you're using Requests >= 2.4 you can set it as tuple: "(connect, read)" which is used to set individual connect and read timeouts.)
+            detect_version: autodetect Zabbix API version
         """
 
         if session:
