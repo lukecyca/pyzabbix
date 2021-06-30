@@ -68,11 +68,7 @@ class ZabbixAPI(object):
         logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
         self.version = ''
-        if detect_version:
-            self.version = semantic_version.Version(
-                self.api_version()
-            )
-            logger.info("Zabbix API version is: %s", self.api_version())
+        self._detect_version = detect_version
 
     def __enter__(self):
         return self
@@ -92,6 +88,12 @@ class ZabbixAPI(object):
            :param user: Username used to login into Zabbix
            :param api_token: API Token to authenticate with
         """
+
+        if self._detect_version:
+            self.version = semantic_version.Version(
+                self.api_version()
+            )
+            logger.info("Zabbix API version is: %s", self.api_version())
 
         # If the API token is explicitly provided, use this instead.
         if api_token is not None:
