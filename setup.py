@@ -36,10 +36,12 @@ setup(
     ],
     extras_require={
         "dev": [
-            "pytest",
+            "black",
+            "httpretty<0.8.7",
+            "isort",
             "pytest-cov",
             "pytest-xdist",
-            "httpretty<0.8.7",
+            "pytest",
         ],
     },
 )
