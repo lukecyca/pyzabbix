@@ -36,6 +36,9 @@ setup(
     ],
     extras_require={
         "dev": [
+            "pytest",
+            "pytest-cov",
+            "pytest-xdist",
             "httpretty<0.8.7",
         ],
     },
