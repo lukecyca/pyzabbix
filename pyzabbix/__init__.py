@@ -16,7 +16,7 @@ class ZabbixAPIException(Exception):
     """ generic zabbix api exception
     code list:
          -32700 - invalid JSON. An error occurred on the server while parsing the JSON text (typo, wrong quotes, etc.)
-         -32600 - received JSON is not a valid JSON-RPC Request 
+         -32600 - received JSON is not a valid JSON-RPC Request
          -32601 - requested remote-procedure does not exist
          -32602 - invalid method parameters
          -32603 - Internal JSON-RPC error

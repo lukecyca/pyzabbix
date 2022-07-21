@@ -1,4 +1,4 @@
-# PyZabbix #
+# PyZabbix
 
 **PyZabbix** is a Python module for working with the [Zabbix API](https://www.zabbix.com/documentation/current/manual/api/reference).
 
@@ -6,9 +6,11 @@
 [![PyPi version](https://img.shields.io/pypi/v/pyzabbix.svg)](https://pypi.python.org/pypi/pyzabbix/)
 
 ## Requirements
-* Tested against Zabbix 1.8 through 5.0
 
-## Documentation ##
+- Tested against Zabbix 1.8 through 5.0
+
+## Documentation
+
 ### Getting Started
 
 Install PyZabbix using pip:
@@ -31,16 +33,19 @@ print("Connected to Zabbix API Version %s" % zapi.api_version())
 for h in zapi.host.get(output="extend"):
     print(h['hostid'])
 ```
+
 Refer to the [Zabbix API Documentation](https://www.zabbix.com/documentation/current/manual/api/reference) and the [PyZabbix Examples](https://github.com/lukecyca/pyzabbix/tree/master/examples) for more information.
 
 ### Customizing the HTTP request
+
 PyZabbix uses the [requests](https://requests.readthedocs.io/en/master/) library for HTTP. You can customize the request parameters by configuring the [requests Session](https://requests.readthedocs.io/en/master/user/advanced/#session-objects) object used by PyZabbix.
 
 This is useful for:
-* Customizing headers
-* Enabling HTTP authentication
-* Enabling Keep-Alive
-* Disabling SSL certificate verification
+
+- Customizing headers
+- Enabling HTTP authentication
+- Enabling Keep-Alive
+- Disabling SSL certificate verification
 
 ```python
 from pyzabbix import ZabbixAPI
@@ -64,7 +69,9 @@ zapi.login("http user", "http password")
 ```
 
 ### Enabling debug logging
+
 If you need to debug some issue with the Zabbix API, you can enable the output of logging, pyzabbix already uses the default python logging facility but by default, it logs to "Null", you can change this behavior on your program, here's an example:
+
 ```python
 import sys
 import logging
@@ -84,6 +91,7 @@ zapi.login('admin','password')
 # zapi.login(api_token='xxxxx')
 
 ```
+
 The expected output is as following:
 
 ```
@@ -105,8 +113,9 @@ Response Body: {
 >>>
 ```
 
-## License ##
-LGPL 2.1   http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+## License
+
+LGPL 2.1 http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
 
 Zabbix API Python Library.
 
@@ -121,9 +130,9 @@ version 2.1 of the License, or (at your option) any later version.
 
 This library is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public
 License along with this library; if not, write to the Free Software
-Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
