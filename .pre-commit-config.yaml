@@ -34,3 +34,9 @@ repos:
     hooks:
       - id: codespell
         exclude: ^examples/additemcsv.py$
+
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v2.34.0
+    hooks:
+      - id: pyupgrade
+        args: [--py3-plus, --py36-plus]
