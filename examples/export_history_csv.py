@@ -56,8 +56,8 @@ def convertTimeStamp(inputTime):
     if(inputTime == ''):
         return ''
     try:
-        tempDate=datetime.datetime.strptime(inputTime,'%Y-%m-%d %H:%M:%S')
-        timestamp = int(time.mktime(tempDate.timetuple()))
+        tmpDate=datetime.datetime.strptime(inputTime,'%Y-%m-%d %H:%M:%S')
+        timestamp = int(time.mktime(tmpDate.timetuple()))
     except:
         print ("time data %s does not match format Y-m-d H:M:S, exit" % (datetime))
         sys.exit()
