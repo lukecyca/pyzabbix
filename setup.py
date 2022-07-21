@@ -6,10 +6,6 @@ with open("README.md", "r") as fh:
 setup(
     name="pyzabbix",
     version="1.0.0",
-    install_requires=[
-        "requests>=1.0",
-        "semantic-version>=2.8"
-    ],
     description="Zabbix API Python interface",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -21,10 +17,10 @@ setup(
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
-	"Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
-	"Programming Language :: Python :: 3.6",
-	"Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
         "Operating System :: OS Independent",
         "Development Status :: 4 - Beta",
@@ -34,7 +30,16 @@ setup(
         "Topic :: System :: Systems Administration",
     ],
     packages=["pyzabbix"],
-    tests_require=[
-        "httpretty<0.8.7",
+    install_requires=[
+        "requests>=1.0",
+        "semantic-version>=2.8",
     ],
+    extras_require={
+        "dev": [
+            "pytest",
+            "pytest-cov",
+            "pytest-xdist",
+            "httpretty<0.8.7",
+        ],
+    },
 )
