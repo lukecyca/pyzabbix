@@ -7,4 +7,4 @@ python:
   - "3.7"
 install:
   - pip install requests
-script:  python setup.py nosetests
+script: python setup.py nosetests

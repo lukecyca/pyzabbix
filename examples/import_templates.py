@@ -1,10 +1,10 @@
-"""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+"""
 Import Zabbix XML templates
-"""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+"""
+
 from pyzabbix import ZabbixAPI, ZabbixAPIException
 import os
-import sys                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+import sys
 
 if len(sys.argv) <= 1:
     print('Please provide directory with templates as first ARG or the XML file with template.')

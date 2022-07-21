@@ -3,13 +3,13 @@
 # under grant agreement no 257386.
 #	http://www.bonfire-project.eu/
 # Copyright 2012 Yahya Al-Hazmi, TU Berlin
-# Licensed under the Apache License, Version 2.0 (the "License"); 
+# Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#	http://www.apache.org/licenses/LICENSE-2.0 
+#	http://www.apache.org/licenses/LICENSE-2.0
 #
-# Unless required by applicable law or agreed to in writing, software 
+# Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
@@ -32,7 +32,7 @@ def login(zapi, username, password):
 
 
 def getHostId(zapi, hostname, server):
-    if(hostname == ''): 
+    if(hostname == ''):
         print ('hostname is missed')
         sys.exit()
     host = zapi.host.get(filter={"host":hostname}, output="extend")
@@ -115,7 +115,7 @@ def fetch_to_csv(username,password,server,hostname,key,output,datetime1,datetime
     print ("key is: %s" %(key))
     items = getItems(zapi, key, hostid, hostname)
     item = items[0]
-    
+
     # parameter validation
     inputParameters = {}
     inputParameters["history"] = item["value_type"]
@@ -123,8 +123,8 @@ def fetch_to_csv(username,password,server,hostname,key,output,datetime1,datetime
     inputParameters["itemids"] = [item["itemid"]]
 
     assignTimeRange(inputParameters, datetime1, datetime2)
-	
-    # get history 
+
+    # get history
     print('get history using this parameter')
     print( inputParameters )
     history = zapi.history.get( **inputParameters )
@@ -158,4 +158,3 @@ args = parser.parse_args()
 
 #Calling fetching function
 fetch_to_csv(args.username, args.password, args.server_IP, args.hostname, args.key, args.output, args.datetime1,args.datetime2,args.debuglevel)
-
