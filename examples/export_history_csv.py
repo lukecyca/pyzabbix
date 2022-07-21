@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 # The research leading to these results has received funding from the
 # European Commission's Seventh Framework Programme (FP7/2007-13)
 # under grant agreement no 257386.
