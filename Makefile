@@ -22,6 +22,12 @@ format: $(VENV)
 	black .
 	isort . --profile black
 
+lint: $(VENV)
+	source $(VENV)/bin/activate
+	black . --check
+	isort . --profile black --check
+	pylint --jobs=$(CPU_CORES) --output-format=colorized pyzabbix tests
+
 test: $(VENV)
 	source $(VENV)/bin/activate
 	pytest -v \

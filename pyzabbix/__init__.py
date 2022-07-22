@@ -15,16 +15,18 @@ logger.addHandler(_NullHandler())
 
 
 class ZabbixAPIException(Exception):
-    """generic zabbix api exception
-    code list:
-         -32700 - invalid JSON. An error occurred on the server while parsing the JSON text (typo, wrong quotes, etc.)
-         -32600 - received JSON is not a valid JSON-RPC Request
-         -32601 - requested remote-procedure does not exist
-         -32602 - invalid method parameters
-         -32603 - Internal JSON-RPC error
-         -32400 - System error
-         -32300 - Transport error
-         -32500 - Application error
+    """Generic Zabbix API exception
+
+    Codes:
+      - 32700: invalid JSON. An error occurred on the server while
+               parsing the JSON text (typo, wrong quotes, etc.)
+      - 32600: received JSON is not a valid JSON-RPC Request
+      - 32601: requested remote-procedure does not exist
+      - 32602: invalid method parameters
+      - 32603: Internal JSON-RPC error
+      - 32400: System error
+      - 32300: Transport error
+      - 32500: Application error
     """
 
     def __init__(self, *args, **kwargs):
@@ -33,7 +35,9 @@ class ZabbixAPIException(Exception):
         self.error = kwargs.get("error", None)
 
 
+# pylint: disable=too-many-instance-attributes
 class ZabbixAPI:
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         server="http://localhost/zabbix",
@@ -43,12 +47,14 @@ class ZabbixAPI:
         detect_version=True,
     ):
         """
-        Parameters:
-            server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
-            session: optional pre-configured requests.Session instance
-            use_authenticate: Use old (Zabbix 1.8) style authentication
-            timeout: optional connect and read timeout in seconds, default: None (if you're using Requests >= 2.4 you can set it as tuple: "(connect, read)" which is used to set individual connect and read timeouts.)
-            detect_version: autodetect Zabbix API version
+        :param server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
+        :param session: optional pre-configured requests.Session instance
+        :param use_authenticate: Use old (Zabbix 1.8) style authentication
+        :param timeout: optional connect and read timeout in seconds, default: None
+                        If you're using Requests >= 2.4 you can set it as
+                        tuple: "(connect, read)" which is used to set individual
+                        connect and read timeouts.
+        :param detect_version: autodetect Zabbix API version
         """
 
         if session:
@@ -68,7 +74,7 @@ class ZabbixAPI:
         self.use_authenticate = use_authenticate
         self.use_api_token = False
         self.auth = ""
-        self.id = 0
+        self.id = 0  # pylint: disable=invalid-name
 
         self.timeout = timeout
 
@@ -85,17 +91,21 @@ class ZabbixAPI:
     def __enter__(self):
         return self
 
+    # pylint: disable=inconsistent-return-statements
     def __exit__(self, exception_type, exception_value, traceback):
         if isinstance(exception_value, (ZabbixAPIException, type(None))):
             if self.is_authenticated and not self.use_api_token:
-                """Logout the user if they are authenticated using username + password."""
+                # Logout the user if they are authenticated using username + password.
                 self.user.logout()
             return True
 
     def login(self, user="", password="", api_token=None):
-        """Convenience method for calling user.authenticate and storing the resulting auth token
-        for further commands.
-        If use_authenticate is set, it uses the older (Zabbix 1.8) authentication command
+        """Convenience method for calling user.authenticate
+        and storing the resulting auth token for further commands.
+
+        If use_authenticate is set, it uses the older (Zabbix 1.8)
+        authentication command
+
         :param password: Password used to login into Zabbix
         :param user: Username used to login into Zabbix
         :param api_token: API Token to authenticate with
@@ -123,15 +133,15 @@ class ZabbixAPI:
 
     def check_authentication(self):
         if self.use_api_token:
-            """We cannot use this call using an API Token"""
+            # We cannot use this call using an API Token
             return True
-        """Convenience method for calling user.checkAuthentication of the current session"""
+        # Convenience method for calling user.checkAuthentication of the current session
         return self.user.checkAuthentication(sessionid=self.auth)
 
     @property
     def is_authenticated(self):
         if self.use_api_token:
-            """We cannot use this call using an API Token"""
+            # We cannot use this call using an API Token
             return True
 
         try:
@@ -164,7 +174,8 @@ class ZabbixAPI:
             "id": self.id,
         }
 
-        # We don't have to pass the auth token if asking for the apiinfo.version or user.checkAuthentication
+        # We don't have to pass the auth token if asking for
+        # the apiinfo.version or user.checkAuthentication
         if (
             self.auth
             and method != "apiinfo.version"
@@ -184,13 +195,15 @@ class ZabbixAPI:
         # list of allowed headers.
         response.raise_for_status()
 
-        if not len(response.text):
+        if not response.text:
             raise ZabbixAPIException("Received empty response")
 
         try:
             response_json = json.loads(response.text)
-        except ValueError:
-            raise ZabbixAPIException("Unable to parse json: %s" % response.text)
+        except ValueError as exception:
+            raise ZabbixAPIException(
+                f"Unable to parse json: {response.text}"
+            ) from exception
         logger.debug(
             "Response Body: %s",
             json.dumps(response_json, indent=4, separators=(",", ": ")),
@@ -199,17 +212,16 @@ class ZabbixAPI:
         self.id += 1
 
         if "error" in response_json:  # some exception
-            if (
-                "data" not in response_json["error"]
-            ):  # some errors don't contain 'data': workaround for ZBX-9340
-                response_json["error"]["data"] = "No data"
-            msg = "Error {code}: {message}, {data}".format(
-                code=response_json["error"]["code"],
-                message=response_json["error"]["message"],
-                data=response_json["error"]["data"],
-            )
+            error = response_json["error"]
+
+            # some errors don't contain 'data': workaround for ZBX-9340
+            if "data" not in error:
+                error["data"] = "No data"
+
             raise ZabbixAPIException(
-                msg, response_json["error"]["code"], error=response_json["error"]
+                f"Error {error['code']}: {error['message']}, {error['data']}",
+                error["code"],
+                error=error,
             )
 
         return response_json
@@ -219,6 +231,7 @@ class ZabbixAPI:
         return ZabbixAPIObjectClass(attr, self)
 
 
+# pylint: disable=too-few-public-methods
 class ZabbixAPIObjectClass:
     def __init__(self, name, parent):
         self.name = name
@@ -227,7 +240,7 @@ class ZabbixAPIObjectClass:
     def __getattr__(self, attr):
         """Dynamically create a method (ie: get)"""
 
-        def fn(*args, **kwargs):
+        def func(*args, **kwargs):
             if args and kwargs:
                 raise TypeError("Found both args and kwargs")
 
@@ -235,4 +248,4 @@ class ZabbixAPIObjectClass:
                 "result"
             ]
 
-        return fn
+        return func

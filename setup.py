@@ -40,6 +40,7 @@ setup(
             "black",
             "httpretty<0.8.7",
             "isort",
+            "pylint",
             "pytest-cov",
             "pytest-xdist",
             "pytest",
