@@ -44,7 +44,7 @@ if not len(history):
 # Print out each datapoint
 for point in history:
     print(
-        "{0}: {1}".format(
+        "{}: {}".format(
             datetime.fromtimestamp(int(point["clock"])).strftime("%x %X"),
             point["value"],
         )

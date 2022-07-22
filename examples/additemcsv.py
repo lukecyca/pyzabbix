@@ -42,7 +42,7 @@ nadd = int(0)
 hosts = zapi.host.get(filter={"host": host_name}, selectInterfaces=["interfaceid"])
 if hosts:
     host_id = hosts[0]["hostid"]
-    print("host_name " + host_name + " @ host id {0}".format(host_id))
+    print("host_name " + host_name + f" @ host id {host_id}")
     with open(
         arquivo, newline="", encoding="utf-8"
     ) as csvfile:  # sys.argv[2]/'zbx_l15_k10.csv'
