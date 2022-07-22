@@ -3,7 +3,6 @@ import unittest
 
 import httpretty
 import pytest
-import semantic_version
 
 from pyzabbix import ZabbixAPI, ZabbixAPIException
 
