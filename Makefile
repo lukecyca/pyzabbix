@@ -27,6 +27,7 @@ lint: $(VENV)
 	black . --check
 	isort . --profile black --check
 	pylint --jobs=$(CPU_CORES) --output-format=colorized pyzabbix tests
+	mypy pyzabbix tests || true
 
 test: $(VENV)
 	source $(VENV)/bin/activate

@@ -1,8 +1,9 @@
 import json
 import logging
+from typing import Optional, Tuple, Union
 
-import requests
-import semantic_version
+from requests import Session
+import semantic_version  # type: ignore
 
 
 class _NullHandler(logging.Handler):
@@ -40,11 +41,11 @@ class ZabbixAPI:
     # pylint: disable=too-many-arguments
     def __init__(
         self,
-        server="http://localhost/zabbix",
-        session=None,
-        use_authenticate=False,
-        timeout=None,
-        detect_version=True,
+        server: str = "http://localhost/zabbix",
+        session: Optional[Session] = None,
+        use_authenticate: bool = False,
+        timeout: Optional[Union[float, int, Tuple[int, int]]] = None,
+        detect_version: bool = True,
     ):
         """
         :param server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
@@ -60,7 +61,7 @@ class ZabbixAPI:
         if session:
             self.session = session
         else:
-            self.session = requests.Session()
+            self.session = Session()
 
         # Default headers for all requests
         self.session.headers.update(
@@ -88,7 +89,7 @@ class ZabbixAPI:
         self.version = ""
         self._detect_version = detect_version
 
-    def __enter__(self):
+    def __enter__(self) -> "ZabbixAPI":
         return self
 
     # pylint: disable=inconsistent-return-statements
@@ -98,8 +99,14 @@ class ZabbixAPI:
                 # Logout the user if they are authenticated using username + password.
                 self.user.logout()
             return True
+        return None
 
-    def login(self, user="", password="", api_token=None):
+    def login(
+        self,
+        user: str = "",
+        password: str = "",
+        api_token: Optional[str] = None,
+    ) -> None:
         """Convenience method for calling user.authenticate
         and storing the resulting auth token for further commands.
 
@@ -139,7 +146,7 @@ class ZabbixAPI:
         return self.user.checkAuthentication(sessionid=self.auth)
 
     @property
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         if self.use_api_token:
             # We cannot use this call using an API Token
             return True
@@ -150,7 +157,12 @@ class ZabbixAPI:
             return False
         return True
 
-    def confimport(self, confformat="", source="", rules=""):
+    def confimport(
+        self,
+        confformat: str = "",
+        source: str = "",
+        rules: str = "",
+    ) -> dict:
         """Alias for configuration.import because it clashes with
         Python's import reserved keyword
         :param rules:
@@ -166,7 +178,7 @@ class ZabbixAPI:
     def api_version(self):
         return self.apiinfo.version()
 
-    def do_request(self, method, params=None):
+    def do_request(self, method: str, params: dict = None) -> dict:
         request_json = {
             "jsonrpc": "2.0",
             "method": method,
@@ -226,14 +238,14 @@ class ZabbixAPI:
 
         return response_json
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> "ZabbixAPIObjectClass":
         """Dynamically create an object class (ie: host)"""
         return ZabbixAPIObjectClass(attr, self)
 
 
 # pylint: disable=too-few-public-methods
 class ZabbixAPIObjectClass:
-    def __init__(self, name, parent):
+    def __init__(self, name: str, parent: Union["ZabbixAPI", "ZabbixAPIObjectClass"]):
         self.name = name
         self.parent = parent
 
