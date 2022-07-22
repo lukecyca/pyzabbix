@@ -64,6 +64,20 @@ def test_host_get():
 
 
 @httpretty.activate
+def test_dict_like_access():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body=json.dumps({"jsonrpc": "2.0", "result": [{"hostid": 1234}], "id": 0}),
+    )
+
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    result = zapi["host"]["get"]()
+
+    assert result == [{"hostid": 1234}]
+
+
+@httpretty.activate
 def test_host_delete():
     httpretty.register_uri(
         httpretty.POST,
