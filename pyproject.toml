@@ -5,6 +5,10 @@ disable = [
   "missing-module-docstring",
 ]
 
+[tool.mypy]
+allow_redefinition = true
+disallow_incomplete_defs= true
+
 [build-system]
 requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"

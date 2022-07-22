@@ -2,7 +2,7 @@ import json
 import logging
 
 import requests
-import semantic_version
+import semantic_version  # type: ignore
 
 
 class _NullHandler(logging.Handler):

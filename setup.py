@@ -40,6 +40,8 @@ setup(
             "black",
             "httpretty<0.8.7",
             "isort",
+            "mypy",
+            "types-requests",
             "pylint",
             "pytest-cov",
             "pytest-xdist",

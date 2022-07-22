@@ -1,6 +1,6 @@
 import json
 
-import httpretty
+import httpretty  # type: ignore
 import pytest
 
 from pyzabbix import ZabbixAPI, ZabbixAPIException
