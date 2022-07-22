@@ -1,5 +1,4 @@
 import json
-import unittest
 
 import httpretty
 import pytest
@@ -7,143 +6,135 @@ import pytest
 from pyzabbix import ZabbixAPI, ZabbixAPIException
 
 
-class TestPyZabbix(unittest.TestCase):
-    @httpretty.activate
-    def test_login(self):
-        httpretty.register_uri(
-            httpretty.POST,
-            "http://example.com/api_jsonrpc.php",
-            body=json.dumps(
-                {
-                    "jsonrpc": "2.0",
-                    "result": "0424bd59b807674191e7d77572075f33",
-                    "id": 0,
-                }
-            ),
-        )
+@httpretty.activate
+def test_login():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body=json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "result": "0424bd59b807674191e7d77572075f33",
+                "id": 0,
+            }
+        ),
+    )
 
-        zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.login("mylogin", "mypass")
+
+    # Check request
+    assert json.loads(httpretty.last_request().body.decode("utf-8")) == {
+        "jsonrpc": "2.0",
+        "method": "user.login",
+        "params": {"user": "mylogin", "password": "mypass"},
+        "id": 0,
+    }
+
+    assert httpretty.last_request().headers["content-type"] == "application/json-rpc"
+    assert httpretty.last_request().headers["user-agent"] == "python/pyzabbix"
+
+    # Check response
+    assert zapi.auth == "0424bd59b807674191e7d77572075f33"
+
+
+@httpretty.activate
+def test_host_get():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body=json.dumps({"jsonrpc": "2.0", "result": [{"hostid": 1234}], "id": 0}),
+    )
+
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.auth = "123"
+    result = zapi.host.get()
+
+    # Check request
+    assert json.loads(httpretty.last_request().body.decode("utf-8")) == {
+        "jsonrpc": "2.0",
+        "method": "host.get",
+        "params": {},
+        "auth": "123",
+        "id": 0,
+    }
+
+    # Check response
+    assert result == [{"hostid": 1234}]
+
+
+@httpretty.activate
+def test_host_delete():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body=json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "result": {
+                    "itemids": [
+                        "22982",
+                        "22986",
+                    ]
+                },
+                "id": 0,
+            }
+        ),
+    )
+
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.auth = "123"
+    result = zapi.host.delete("22982", "22986")
+
+    # Check request
+
+    assert json.loads(httpretty.last_request().body.decode("utf-8")) == {
+        "jsonrpc": "2.0",
+        "method": "host.delete",
+        "params": ["22982", "22986"],
+        "auth": "123",
+        "id": 0,
+    }
+
+    # Check response
+    assert set(result["itemids"]) == {"22982", "22986"}
+
+
+@httpretty.activate
+def test_login_with_context():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body=json.dumps(
+            {
+                "jsonrpc": "2.0",
+                "result": "0424bd59b807674191e7d77572075f33",
+                "id": 0,
+            }
+        ),
+    )
+
+    with ZabbixAPI("http://example.com", detect_version=False) as zapi:
         zapi.login("mylogin", "mypass")
+        assert zapi.auth == "0424bd59b807674191e7d77572075f33"
 
-        # Check request
-        self.assertEqual(
-            json.loads(httpretty.last_request().body.decode("utf-8")),
+
+@httpretty.activate
+def test_detecting_version():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body=json.dumps(
             {
                 "jsonrpc": "2.0",
-                "method": "user.login",
-                "params": {"user": "mylogin", "password": "mypass"},
+                "result": "4.0.0",
                 "id": 0,
-            },
-        )
-        self.assertEqual(
-            httpretty.last_request().headers["content-type"], "application/json-rpc"
-        )
-        self.assertEqual(
-            httpretty.last_request().headers["user-agent"], "python/pyzabbix"
-        )
+            }
+        ),
+    )
 
-        # Check response
-        self.assertEqual(zapi.auth, "0424bd59b807674191e7d77572075f33")
-
-    @httpretty.activate
-    def test_host_get(self):
-        httpretty.register_uri(
-            httpretty.POST,
-            "http://example.com/api_jsonrpc.php",
-            body=json.dumps({"jsonrpc": "2.0", "result": [{"hostid": 1234}], "id": 0}),
-        )
-
-        zapi = ZabbixAPI("http://example.com", detect_version=False)
-        zapi.auth = "123"
-        result = zapi.host.get()
-
-        # Check request
-        self.assertEqual(
-            json.loads(httpretty.last_request().body.decode("utf-8")),
-            {
-                "jsonrpc": "2.0",
-                "method": "host.get",
-                "params": {},
-                "auth": "123",
-                "id": 0,
-            },
-        )
-
-        # Check response
-        self.assertEqual(result, [{"hostid": 1234}])
-
-    @httpretty.activate
-    def test_host_delete(self):
-        httpretty.register_uri(
-            httpretty.POST,
-            "http://example.com/api_jsonrpc.php",
-            body=json.dumps(
-                {
-                    "jsonrpc": "2.0",
-                    "result": {
-                        "itemids": [
-                            "22982",
-                            "22986",
-                        ]
-                    },
-                    "id": 0,
-                }
-            ),
-        )
-
-        zapi = ZabbixAPI("http://example.com", detect_version=False)
-        zapi.auth = "123"
-        result = zapi.host.delete("22982", "22986")
-
-        # Check request
-        self.assertEqual(
-            json.loads(httpretty.last_request().body.decode("utf-8")),
-            {
-                "jsonrpc": "2.0",
-                "method": "host.delete",
-                "params": ["22982", "22986"],
-                "auth": "123",
-                "id": 0,
-            },
-        )
-
-        # Check response
-        self.assertEqual(set(result["itemids"]), {"22982", "22986"})
-
-    @httpretty.activate
-    def test_login_with_context(self):
-        httpretty.register_uri(
-            httpretty.POST,
-            "http://example.com/api_jsonrpc.php",
-            body=json.dumps(
-                {
-                    "jsonrpc": "2.0",
-                    "result": "0424bd59b807674191e7d77572075f33",
-                    "id": 0,
-                }
-            ),
-        )
-
-        with ZabbixAPI("http://example.com", detect_version=False) as zapi:
-            zapi.login("mylogin", "mypass")
-            self.assertEqual(zapi.auth, "0424bd59b807674191e7d77572075f33")
-
-    @httpretty.activate
-    def test_detecting_version(self):
-        httpretty.register_uri(
-            httpretty.POST,
-            "http://example.com/api_jsonrpc.php",
-            body=json.dumps(
-                {
-                    "jsonrpc": "2.0",
-                    "result": "4.0.0",
-                    "id": 0,
-                }
-            ),
-        )
-
-        zapi_detect = ZabbixAPI("http://example.com")
-        self.assertEqual(zapi_detect.api_version(), "4.0.0")
+    zapi_detect = ZabbixAPI("http://example.com")
+    assert zapi_detect.api_version() == "4.0.0"
 
 
 @httpretty.activate
