@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import Mapping, Optional, Sequence, Tuple, Union
+from warnings import warn
 
 import semantic_version  # type: ignore
 from requests import Session
@@ -242,13 +243,13 @@ class ZabbixAPI:
 
         return response_json
 
-    def __getattr__(self, attr: str) -> "ZabbixAPIObjectClass":
+    def __getattr__(self, attr: str) -> "ZabbixAPIObject":
         """Dynamically create an object class (ie: host)"""
-        return ZabbixAPIObjectClass(attr, self)
+        return ZabbixAPIObject(attr, self)
 
 
 # pylint: disable=too-few-public-methods
-class ZabbixAPIObjectClass:
+class ZabbixAPIObject:
     def __init__(self, name: str, parent: ZabbixAPI):
         self.name = name
         self.parent = parent
@@ -265,3 +266,13 @@ class ZabbixAPIObjectClass:
             ]
 
         return func
+
+
+class ZabbixAPIObjectClass(ZabbixAPIObject):
+    def __init__(self, *args, **kwargs):
+        warn(
+            "ZabbixAPIObjectClass has been renamed to ZabbixAPIObject",
+            DeprecationWarning,
+            2,
+        )
+        super().__init__(*args, **kwargs)
