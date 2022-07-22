@@ -2,9 +2,10 @@ import json
 import unittest
 
 import httpretty
+import pytest
 import semantic_version
 
-from pyzabbix import ZabbixAPI
+from pyzabbix import ZabbixAPI, ZabbixAPIException
 
 
 class TestPyZabbix(unittest.TestCase):
@@ -144,3 +145,16 @@ class TestPyZabbix(unittest.TestCase):
 
         zapi_detect = ZabbixAPI("http://example.com")
         self.assertEqual(zapi_detect.api_version(), "4.0.0")
+
+
+@httpretty.activate
+def test_empty_response():
+    httpretty.register_uri(
+        httpretty.POST,
+        "http://example.com/api_jsonrpc.php",
+        body="",
+    )
+
+    zapi = ZabbixAPI("http://example.com")
+    with pytest.raises(ZabbixAPIException, match="Received empty response"):
+        zapi.login("mylogin", "mypass")
