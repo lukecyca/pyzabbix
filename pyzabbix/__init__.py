@@ -1,9 +1,9 @@
 import json
 import logging
-from typing import Optional, Tuple, Union
+from typing import Mapping, Optional, Sequence, Tuple, Union
 
-from requests import Session
 import semantic_version  # type: ignore
+from requests import Session
 
 
 class _NullHandler(logging.Handler):
@@ -178,7 +178,11 @@ class ZabbixAPI:
     def api_version(self):
         return self.apiinfo.version()
 
-    def do_request(self, method: str, params: dict = None) -> dict:
+    def do_request(
+        self,
+        method: str,
+        params: Optional[Union[Mapping, Sequence]] = None,
+    ) -> dict:
         request_json = {
             "jsonrpc": "2.0",
             "method": method,
@@ -245,7 +249,7 @@ class ZabbixAPI:
 
 # pylint: disable=too-few-public-methods
 class ZabbixAPIObjectClass:
-    def __init__(self, name: str, parent: Union["ZabbixAPI", "ZabbixAPIObjectClass"]):
+    def __init__(self, name: str, parent: ZabbixAPI):
         self.name = name
         self.parent = parent
 
