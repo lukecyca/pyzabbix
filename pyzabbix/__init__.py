@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import Mapping, Optional, Sequence, Tuple, Union
+from warnings import warn
 
 import semantic_version  # type: ignore
 from requests import Session
@@ -19,15 +20,15 @@ class ZabbixAPIException(Exception):
     """Generic Zabbix API exception
 
     Codes:
-      - 32700: invalid JSON. An error occurred on the server while
-               parsing the JSON text (typo, wrong quotes, etc.)
-      - 32600: received JSON is not a valid JSON-RPC Request
-      - 32601: requested remote-procedure does not exist
-      - 32602: invalid method parameters
-      - 32603: Internal JSON-RPC error
-      - 32400: System error
-      - 32300: Transport error
-      - 32500: Application error
+      -32700: invalid JSON. An error occurred on the server while
+              parsing the JSON text (typo, wrong quotes, etc.)
+      -32600: received JSON is not a valid JSON-RPC Request
+      -32601: requested remote-procedure does not exist
+      -32602: invalid method parameters
+      -32603: Internal JSON-RPC error
+      -32400: System error
+      -32300: Transport error
+      -32500: Application error
     """
 
     def __init__(self, *args, **kwargs):
@@ -242,26 +243,40 @@ class ZabbixAPI:
 
         return response_json
 
-    def __getattr__(self, attr: str) -> "ZabbixAPIObjectClass":
+    def __getattr__(self, attr: str) -> "ZabbixAPIObject":
         """Dynamically create an object class (ie: host)"""
-        return ZabbixAPIObjectClass(attr, self)
+        return ZabbixAPIObject(attr, self)
 
 
 # pylint: disable=too-few-public-methods
-class ZabbixAPIObjectClass:
+class ZabbixAPIMethod:
+    def __init__(self, method: str, parent: ZabbixAPI):
+        self.method = method
+        self.parent = parent
+
+    def __call__(self, *args, **kwargs):
+        if args and kwargs:
+            raise TypeError("Found both args and kwargs")
+
+        return self.parent.do_request(self.method, args or kwargs)["result"]
+
+
+# pylint: disable=too-few-public-methods
+class ZabbixAPIObject:
     def __init__(self, name: str, parent: ZabbixAPI):
         self.name = name
         self.parent = parent
 
     def __getattr__(self, attr):
         """Dynamically create a method (ie: get)"""
+        return ZabbixAPIMethod(f"{self.name}.{attr}", self.parent)
 
-        def func(*args, **kwargs):
-            if args and kwargs:
-                raise TypeError("Found both args and kwargs")
 
-            return self.parent.do_request(f"{self.name}.{attr}", args or kwargs)[
-                "result"
-            ]
-
-        return func
+class ZabbixAPIObjectClass(ZabbixAPIObject):
+    def __init__(self, *args, **kwargs):
+        warn(
+            "ZabbixAPIObjectClass has been renamed to ZabbixAPIObject",
+            DeprecationWarning,
+            2,
+        )
+        super().__init__(*args, **kwargs)
