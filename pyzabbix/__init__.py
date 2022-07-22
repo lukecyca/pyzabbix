@@ -243,9 +243,15 @@ class ZabbixAPI:
 
         return response_json
 
-    def __getattr__(self, attr: str) -> "ZabbixAPIObject":
+    def _object(self, attr: str) -> "ZabbixAPIObject":
         """Dynamically create an object class (ie: host)"""
         return ZabbixAPIObject(attr, self)
+
+    def __getattr__(self, attr: str) -> "ZabbixAPIObject":
+        return self._object(attr)
+
+    def __getitem__(self, attr: str) -> "ZabbixAPIObject":
+        return self._object(attr)
 
 
 # pylint: disable=too-few-public-methods
@@ -267,9 +273,15 @@ class ZabbixAPIObject:
         self.name = name
         self.parent = parent
 
-    def __getattr__(self, attr):
+    def _method(self, attr: str) -> ZabbixAPIMethod:
         """Dynamically create a method (ie: get)"""
         return ZabbixAPIMethod(f"{self.name}.{attr}", self.parent)
+
+    def __getattr__(self, attr: str) -> ZabbixAPIMethod:
+        return self._method(attr)
+
+    def __getitem__(self, attr: str) -> ZabbixAPIMethod:
+        return self._method(attr)
 
 
 class ZabbixAPIObjectClass(ZabbixAPIObject):
