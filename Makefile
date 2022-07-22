@@ -17,6 +17,11 @@ install: $(VENV)
 	pip install --upgrade pip setuptools wheel
 	pip install --editable .[dev]
 
+format: $(VENV)
+	source $(VENV)/bin/activate
+	black .
+	isort . --profile black
+
 test: $(VENV)
 	source $(VENV)/bin/activate
 	pytest -v \
