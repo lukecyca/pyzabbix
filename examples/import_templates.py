@@ -48,7 +48,7 @@ if os.path.isdir(path):
     files = glob.glob(path + "/*.xml")
     for file in files:
         print(file)
-        with open(file, "r") as f:
+        with open(file) as f:
             template = f.read()
             try:
                 zapi.confimport("xml", template, rules)
@@ -58,7 +58,7 @@ if os.path.isdir(path):
 elif os.path.isfile(path):
     files = glob.glob(path)
     for file in files:
-        with open(file, "r") as f:
+        with open(file) as f:
             template = f.read()
             try:
                 zapi.confimport("xml", template, rules)

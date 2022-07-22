@@ -27,7 +27,7 @@ for h in zapi.hostinterface.get(
 ):
     # Make sure the hosts are named according to their FQDN
     if h["dns"] != h["hosts"][0]["host"]:
-        print('Warning: %s has dns "%s"' % (h["hosts"][0]["host"], h["dns"]))
+        print('Warning: {} has dns "{}"'.format(h["hosts"][0]["host"], h["dns"]))
 
     # Make sure they are using hostnames to connect rather than IPs (could be also filtered in the get request)
     if h["useip"] == "1":

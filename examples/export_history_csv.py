@@ -38,7 +38,7 @@ def getHostId(zapi, hostname, server):
         sys.exit()
     host = zapi.host.get(filter={"host": hostname}, output="extend")
     if len(host) == 0:
-        print("hostname: %s not found in zabbix server: %s, exit" % (hostname, server))
+        print(f"hostname: {hostname} not found in zabbix server: {server}, exit")
         sys.exit()
     else:
         return host[0]["hostid"]
@@ -47,7 +47,7 @@ def getHostId(zapi, hostname, server):
 def getItems(zapi, key, hostid, hostname):
     items = zapi.item.get(search={"key_": key}, hostids=hostid, output="extend")
     if len(items) == 0:
-        print("item key: %s not found in hostname: %s" % (key, hostname))
+        print(f"item key: {key} not found in hostname: {hostname}")
         sys.exit()
     else:
         return items
@@ -78,7 +78,7 @@ def exportToCSV(historys, key, output):
     inc = 0
     f.write("key;timestamp;valuei\n")  # csv header
     for history in historys:
-        f.write("%s;%s;%s\n" % (key, history["clock"], history["value"]))
+        f.write("{};{};{}\n".format(key, history["clock"], history["value"]))
         inc = inc + 1
     print("exported %i history to %s" % (inc, output))
     f.close()

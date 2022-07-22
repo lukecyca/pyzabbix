@@ -108,7 +108,7 @@ class TestPyZabbix(unittest.TestCase):
         )
 
         # Check response
-        self.assertEqual(set(result["itemids"]), set(["22982", "22986"]))
+        self.assertEqual(set(result["itemids"]), {"22982", "22986"})
 
     @httpretty.activate
     def test_login_with_context(self):

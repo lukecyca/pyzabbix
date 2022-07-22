@@ -42,7 +42,7 @@ for t in triggers:
 for t in triggers:
     if int(t["value"]) == 1:
         print(
-            "{0} - {1} {2}".format(
+            "{} - {} {}".format(
                 t["hosts"][0]["host"],
                 t["description"],
                 "(Unack)" if t["unacknowledged"] else "",
