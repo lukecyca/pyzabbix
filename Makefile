@@ -14,7 +14,7 @@ $(VENV):
 
 install: $(VENV)
 	source $(VENV)/bin/activate
-	pip install --upgrade pip setuptools wheel
+	pip install --upgrade pip setuptools wheel build
 	pip install --editable .[dev]
 
 format: $(VENV)
@@ -48,5 +48,12 @@ e2e: $(VENV)
 	source $(VENV)/bin/activate
 	$(PYTEST_CMD) e2e
 
+build: $(VENV)
+	source $(VENV)/bin/activate
+	python -m build .
+
+release:
+	./scripts/release.sh
+
 clean:
-	rm -Rf $(VENV)
+	rm -Rf $(VENV) dist
