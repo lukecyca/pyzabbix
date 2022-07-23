@@ -170,11 +170,18 @@ class ZabbixAPI:
         :param source:
         :param confformat:
         """
+        warn(
+            "ZabbixAPI.confimport() has been deprecated, please use "
+            "ZabbixAPI.configuration['import']() instead",
+            DeprecationWarning,
+            2,
+        )
 
-        return self.do_request(
-            method="configuration.import",
-            params={"format": confformat, "source": source, "rules": rules},
-        )["result"]
+        return self.configuration["import"](
+            format=confformat,
+            source=source,
+            rules=rules,
+        )
 
     def api_version(self):
         return self.apiinfo.version()
