@@ -4,9 +4,9 @@ from warnings import warn
 
 from requests import Session
 from requests.exceptions import JSONDecodeError
-from semantic_version import Version  # type: ignore
 from typing_extensions import NotRequired, TypedDict
 
+from ._version import Version
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -98,7 +98,7 @@ class ZabbixAPI:
         self.url = server
         logger.info(f"JSON-RPC Server Endpoint: {self.url}")
 
-        self.version = ""
+        self.version: Optional[Version] = None
         self._detect_version = detect_version
 
     def __enter__(self) -> "ZabbixAPI":
@@ -131,7 +131,7 @@ class ZabbixAPI:
         """
 
         if self._detect_version:
-            self.version = Version(self.api_version())
+            self.version = Version.parse(self.api_version())
             logger.info(f"Zabbix API version is: {self.version}")
 
         # If the API token is explicitly provided, use this instead.
@@ -145,7 +145,7 @@ class ZabbixAPI:
         self.auth = ""
         if self.use_authenticate:
             self.auth = self.user.authenticate(user=user, password=password)
-        elif self.version and self.version >= Version("5.4.0"):
+        elif self.version and self.version >= Version(5, 4, 0):
             self.auth = self.user.login(username=user, password=password)
         else:
             self.auth = self.user.login(user=user, password=password)

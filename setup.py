@@ -34,7 +34,6 @@ setup(
     python_requires=">=3.6",
     install_requires=[
         "requests>=1.0",
-        "semantic-version>=2.8",
         "typing_extensions",
     ],
     extras_require={
