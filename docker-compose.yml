@@ -1,0 +1,43 @@
+---
+# For development purpose only
+version: "3.8"
+
+services:
+  postgres-server:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix
+
+  zabbix-server:
+    image: zabbix/zabbix-server-pgsql:alpine-${ZABBIX_VERSION:-6.2}-latest
+    ports:
+      - 10051:10051
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix
+    depends_on:
+      - postgres-server
+
+  zabbix-web:
+    image: zabbix/zabbix-web-nginx-pgsql:alpine-${ZABBIX_VERSION:-6.2}-latest
+    ports:
+      - 8888:8080
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      POSTGRES_USER: zabbix
+      POSTGRES_PASSWORD: zabbix
+      # https://github.com/zabbix/zabbix-docker/issues/991
+      DB_SERVER_ROOT_USER: zabbix
+    depends_on:
+      - postgres-server
+      - zabbix-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
