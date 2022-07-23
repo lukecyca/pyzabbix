@@ -7,7 +7,7 @@
 
 ## Requirements
 
-- Tested against Zabbix 1.8 through 5.0
+- Tested against Zabbix 4.0 LTS, 5.0 LTS, 6.0 LTS and 6.2.
 
 ## Documentation
 
