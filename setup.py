@@ -34,6 +34,7 @@ setup(
     install_requires=[
         "requests>=1.0",
         "semantic-version>=2.8",
+        "typing_extensions",
     ],
     extras_require={
         "dev": [
