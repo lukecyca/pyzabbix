@@ -1,10 +1,12 @@
+# pylint: disable=wrong-import-order
+
 import logging
 from typing import Mapping, Optional, Sequence, Tuple, Union
 from warnings import warn
 
+from packaging.version import Version
 from requests import Session
 from requests.exceptions import JSONDecodeError
-from semantic_version import Version  # type: ignore
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -75,7 +77,7 @@ class ZabbixAPI:
         self.url = server
         logger.info(f"JSON-RPC Server Endpoint: {self.url}")
 
-        self.version = ""
+        self.version: Optional[Version] = None
         self._detect_version = detect_version
 
     def __enter__(self) -> "ZabbixAPI":

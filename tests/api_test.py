@@ -75,6 +75,8 @@ def test_login_with_context(requests_mock):
         ("4.0.0"),
         ("5.4.0"),
         ("6.2.0"),
+        ("6.2.0beta1"),
+        ("6.2.2alpha1"),
     ],
 )
 def test_login_with_version_detect(requests_mock, version):
@@ -166,18 +168,29 @@ def test_attr_syntax_args_and_kwargs_raises():
         zapi.host.delete("22982", hostids=5)
 
 
-def test_detecting_version(requests_mock):
+@pytest.mark.parametrize(
+    "version",
+    [
+        ("4.0.0"),
+        ("4.0.0rc1"),
+        ("6.2.0beta1"),
+        ("6.2.2alpha1"),
+    ],
+)
+def test_detecting_version(requests_mock, version):
     _zabbix_requests_mock_factory(
         requests_mock,
         json={
             "jsonrpc": "2.0",
-            "result": "4.0.0",
+            "result": version,
             "id": 0,
         },
     )
 
     zapi = ZabbixAPI("http://example.com")
-    assert zapi.api_version() == "4.0.0"
+    zapi.login("mylogin", "mypass")
+
+    assert zapi.api_version() == version
 
 
 @pytest.mark.parametrize(
