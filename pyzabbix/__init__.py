@@ -58,11 +58,7 @@ class ZabbixAPI:
                         connect and read timeouts.
         :param detect_version: autodetect Zabbix API version
         """
-
-        if session:
-            self.session = session
-        else:
-            self.session = Session()
+        self.session = session or Session()
 
         # Default headers for all requests
         self.session.headers.update(
