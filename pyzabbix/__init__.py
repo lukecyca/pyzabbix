@@ -199,7 +199,7 @@ class ZabbixAPI:
             rules=rules,
         )
 
-    def api_version(self):
+    def api_version(self) -> str:
         return self.apiinfo.version()
 
     def do_request(
