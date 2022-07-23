@@ -7,7 +7,6 @@ from requests.exceptions import JSONDecodeError
 from semantic_version import Version  # type: ignore
 from typing_extensions import NotRequired, TypedDict
 
-
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 

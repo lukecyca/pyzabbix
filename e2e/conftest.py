@@ -29,6 +29,7 @@ def wait_for_zabbix() -> None:
     if max_attempts < 30:
         sleep(5)
 
+
 @pytest.fixture()
 def zapi() -> ZabbixAPI:
     api = ZabbixAPI(ZABBIX_SERVER)
