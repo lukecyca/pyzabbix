@@ -8,13 +8,8 @@ from semantic_version import Version  # type: ignore
 from typing_extensions import NotRequired, TypedDict
 
 
-class _NullHandler(logging.Handler):
-    def emit(self, record):
-        pass
-
-
 logger = logging.getLogger(__name__)
-logger.addHandler(_NullHandler())
+logger.addHandler(logging.NullHandler())
 
 
 class ZabbixAPIException(Exception):
