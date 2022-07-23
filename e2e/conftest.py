@@ -25,6 +25,9 @@ def wait_for_zabbix() -> None:
     if max_attempts <= 0:
         pytest.exit("waiting for zabbix failed!", 1)
 
+    # extra sleep if zabbix wasn't ready on first attempt
+    if max_attempts < 30:
+        sleep(5)
 
 @pytest.fixture()
 def zapi() -> ZabbixAPI:
