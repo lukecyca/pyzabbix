@@ -63,6 +63,19 @@ def test_host_get():
     assert result == [{"hostid": 1234}]
 
 
+@pytest.mark.parametrize(
+    "server_url, expected",
+    [
+        ("http://example.com", "http://example.com/api_jsonrpc.php"),
+        ("http://example.com/", "http://example.com/api_jsonrpc.php"),
+        ("http://example.com/base", "http://example.com/base/api_jsonrpc.php"),
+        ("http://example.com/base/", "http://example.com/base/api_jsonrpc.php"),
+    ],
+)
+def test_server_url_update(server_url, expected):
+    assert ZabbixAPI(server_url).url == expected
+
+
 @httpretty.activate
 def test_dict_like_access():
     httpretty.register_uri(

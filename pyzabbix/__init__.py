@@ -80,12 +80,10 @@ class ZabbixAPI:
 
         self.timeout = timeout
 
-        self.url = (
-            server + "/api_jsonrpc.php"
-            if not server.endswith("/api_jsonrpc.php")
-            else server
-        )
-        logger.info("JSON-RPC Server Endpoint: %s", self.url)
+        if not server.endswith("/api_jsonrpc.php"):
+            server = server.rstrip("/") + "/api_jsonrpc.php"
+        self.url = server
+        logger.info(f"JSON-RPC Server Endpoint: {self.url}")
 
         self.version = ""
         self._detect_version = detect_version
