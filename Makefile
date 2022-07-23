@@ -35,6 +35,7 @@ test: $(VENV)
 		--numprocesses=$(CPU_CORES) \
 		--color=yes \
 		--cov-report=term \
+		--cov-report=xml:./coverage.xml \
 		--cov=pyzabbix \
 		tests
 
