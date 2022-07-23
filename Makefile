@@ -29,15 +29,24 @@ lint: $(VENV)
 	pylint --jobs=$(CPU_CORES) --output-format=colorized pyzabbix tests
 	mypy pyzabbix tests || true
 
+
+PYTEST_CMD = pytest -v \
+		--numprocesses=$(CPU_CORES) \
+		--color=yes
+
 test: $(VENV)
 	source $(VENV)/bin/activate
-	pytest -v \
-		--numprocesses=$(CPU_CORES) \
-		--color=yes \
+	$(PYTEST_CMD) \
+		--cov-config=./pyproject.toml \
 		--cov-report=term \
 		--cov-report=xml:./coverage.xml \
 		--cov=pyzabbix \
 		tests
+
+.PHONY: e2e
+e2e: $(VENV)
+	source $(VENV)/bin/activate
+	$(PYTEST_CMD) e2e
 
 clean:
 	rm -Rf $(VENV)
