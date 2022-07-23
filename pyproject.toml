@@ -5,6 +5,9 @@ disable = [
   "missing-module-docstring",
 ]
 
+[tool.pylint.format]
+disable = "logging-fstring-interpolation"
+
 [tool.mypy]
 allow_redefinition = true
 disallow_incomplete_defs= true
