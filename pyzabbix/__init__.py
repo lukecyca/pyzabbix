@@ -274,25 +274,25 @@ class ZabbixAPI:
 # pylint: disable=too-few-public-methods
 class ZabbixAPIMethod:
     def __init__(self, method: str, parent: ZabbixAPI):
-        self.method = method
-        self.parent = parent
+        self._method = method
+        self._parent = parent
 
     def __call__(self, *args, **kwargs):
         if args and kwargs:
             raise TypeError("Found both args and kwargs")
 
-        return self.parent.do_request(self.method, args or kwargs)["result"]
+        return self._parent.do_request(self._method, args or kwargs)["result"]
 
 
 # pylint: disable=too-few-public-methods
 class ZabbixAPIObject:
     def __init__(self, name: str, parent: ZabbixAPI):
-        self.name = name
-        self.parent = parent
+        self._name = name
+        self._parent = parent
 
     def _method(self, attr: str) -> ZabbixAPIMethod:
         """Dynamically create a method (ie: get)"""
-        return ZabbixAPIMethod(f"{self.name}.{attr}", self.parent)
+        return ZabbixAPIMethod(f"{self._name}.{attr}", self._parent)
 
     def __getattr__(self, attr: str) -> ZabbixAPIMethod:
         return self._method(attr)
