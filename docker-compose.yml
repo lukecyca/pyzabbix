@@ -30,8 +30,6 @@ services:
     environment:
       POSTGRES_USER: zabbix
       POSTGRES_PASSWORD: zabbix
-      # https://github.com/zabbix/zabbix-docker/issues/991
-      DB_SERVER_ROOT_USER: zabbix
     depends_on:
       - postgres-server
       - zabbix-server
