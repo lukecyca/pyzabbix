@@ -113,6 +113,17 @@ Response Body: {
 >>>
 ```
 
+## Development
+
+To develop this project, start by reading the `Makefile` to have a basic understanding of the possible tasks.
+
+Install the project and the dependencies in a virtual environment:
+
+```sh
+make install
+source .venv/bin/activate
+```
+
 ## License
 
 LGPL 2.1 http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
