@@ -1,10 +1,10 @@
-import json
 import logging
 from typing import Mapping, Optional, Sequence, Tuple, Union
 from warnings import warn
 
 import semantic_version  # type: ignore
 from requests import Session
+from requests.exceptions import JSONDecodeError
 
 
 class _NullHandler(logging.Handler):
@@ -191,7 +191,7 @@ class ZabbixAPI:
         method: str,
         params: Optional[Union[Mapping, Sequence]] = None,
     ) -> dict:
-        request_json = {
+        payload = {
             "jsonrpc": "2.0",
             "method": method,
             "params": params or {},
@@ -205,38 +205,32 @@ class ZabbixAPI:
             and method != "apiinfo.version"
             and method != "user.checkAuthentication"
         ):
-            request_json["auth"] = self.auth
+            payload["auth"] = self.auth
 
-        logger.debug(
-            "Sending: %s", json.dumps(request_json, indent=4, separators=(",", ": "))
-        )
-        response = self.session.post(
-            self.url, data=json.dumps(request_json), timeout=self.timeout
-        )
-        logger.debug("Response Code: %s", str(response.status_code))
+        logger.debug(f"Sending: {payload}")
+        resp = self.session.post(self.url, json=payload, timeout=self.timeout)
+        logger.debug(f"Response Code: {resp.status_code}")
 
         # NOTE: Getting a 412 response code means the headers are not in the
         # list of allowed headers.
-        response.raise_for_status()
+        resp.raise_for_status()
 
-        if not response.text:
+        if not resp.text:
             raise ZabbixAPIException("Received empty response")
 
         try:
-            response_json = json.loads(response.text)
-        except ValueError as exception:
+            response = resp.json()
+        except JSONDecodeError as exception:
             raise ZabbixAPIException(
-                f"Unable to parse json: {response.text}"
+                f"Unable to parse json: {resp.text}"
             ) from exception
-        logger.debug(
-            "Response Body: %s",
-            json.dumps(response_json, indent=4, separators=(",", ": ")),
-        )
+
+        logger.debug(f"Response Body: {response}")
 
         self.id += 1
 
-        if "error" in response_json:  # some exception
-            error = response_json["error"]
+        if "error" in response:  # some exception
+            error = response["error"]
 
             # some errors don't contain 'data': workaround for ZBX-9340
             if "data" not in error:
@@ -248,7 +242,7 @@ class ZabbixAPI:
                 error=error,
             )
 
-        return response_json
+        return response
 
     def _object(self, attr: str) -> "ZabbixAPIObject":
         """Dynamically create an object class (ie: host)"""
