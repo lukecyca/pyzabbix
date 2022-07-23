@@ -1,70 +1,10 @@
-import json
-
-import httpretty  # type: ignore
 import pytest
 
 from pyzabbix import ZabbixAPI, ZabbixAPIException
 
 
-@httpretty.activate
-def test_login():
-    httpretty.register_uri(
-        httpretty.POST,
-        "http://example.com/api_jsonrpc.php",
-        body=json.dumps(
-            {
-                "jsonrpc": "2.0",
-                "result": "0424bd59b807674191e7d77572075f33",
-                "id": 0,
-            }
-        ),
-    )
-
-    zapi = ZabbixAPI("http://example.com", detect_version=False)
-    zapi.login("mylogin", "mypass")
-
-    # Check request
-    assert json.loads(httpretty.last_request().body.decode("utf-8")) == {
-        "jsonrpc": "2.0",
-        "method": "user.login",
-        "params": {"user": "mylogin", "password": "mypass"},
-        "id": 0,
-    }
-
-    assert httpretty.last_request().headers["content-type"] == "application/json-rpc"
-    assert httpretty.last_request().headers["user-agent"] == "python/pyzabbix"
-
-    # Check response
-    assert zapi.auth == "0424bd59b807674191e7d77572075f33"
-
-
-@httpretty.activate
-def test_host_get():
-    httpretty.register_uri(
-        httpretty.POST,
-        "http://example.com/api_jsonrpc.php",
-        body=json.dumps({"jsonrpc": "2.0", "result": [{"hostid": 1234}], "id": 0}),
-    )
-
-    zapi = ZabbixAPI("http://example.com", detect_version=False)
-    zapi.auth = "123"
-    result = zapi.host.get()
-
-    # Check request
-    assert json.loads(httpretty.last_request().body.decode("utf-8")) == {
-        "jsonrpc": "2.0",
-        "method": "host.get",
-        "params": {},
-        "auth": "123",
-        "id": 0,
-    }
-
-    # Check response
-    assert result == [{"hostid": 1234}]
-
-
 @pytest.mark.parametrize(
-    "server_url, expected",
+    "server, expected",
     [
         ("http://example.com", "http://example.com/api_jsonrpc.php"),
         ("http://example.com/", "http://example.com/api_jsonrpc.php"),
@@ -72,73 +12,56 @@ def test_host_get():
         ("http://example.com/base/", "http://example.com/base/api_jsonrpc.php"),
     ],
 )
-def test_server_url_update(server_url, expected):
-    assert ZabbixAPI(server_url).url == expected
+def test_server_url_correction(server, expected):
+    assert ZabbixAPI(server).url == expected
 
 
-@httpretty.activate
-def test_dict_like_access():
-    httpretty.register_uri(
-        httpretty.POST,
+def _zabbix_requests_mock_factory(requests_mock, response, **kwargs):
+    requests_mock.post(
         "http://example.com/api_jsonrpc.php",
-        body=json.dumps({"jsonrpc": "2.0", "result": [{"hostid": 1234}], "id": 0}),
+        request_headers={
+            "Content-Type": "application/json-rpc",
+            "User-Agent": "python/pyzabbix",
+            "Cache-Control": "no-cache",
+        },
+        json=response,
+        **kwargs,
+    )
+
+
+def test_login(requests_mock):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "result": "0424bd59b807674191e7d77572075f33",
+            "id": 0,
+        },
     )
 
     zapi = ZabbixAPI("http://example.com", detect_version=False)
-    result = zapi["host"]["get"]()
-
-    assert result == [{"hostid": 1234}]
-
-
-@httpretty.activate
-def test_host_delete():
-    httpretty.register_uri(
-        httpretty.POST,
-        "http://example.com/api_jsonrpc.php",
-        body=json.dumps(
-            {
-                "jsonrpc": "2.0",
-                "result": {
-                    "itemids": [
-                        "22982",
-                        "22986",
-                    ]
-                },
-                "id": 0,
-            }
-        ),
-    )
-
-    zapi = ZabbixAPI("http://example.com", detect_version=False)
-    zapi.auth = "123"
-    result = zapi.host.delete("22982", "22986")
+    zapi.login("mylogin", "mypass")
 
     # Check request
-
-    assert json.loads(httpretty.last_request().body.decode("utf-8")) == {
+    assert requests_mock.last_request.json() == {
         "jsonrpc": "2.0",
-        "method": "host.delete",
-        "params": ["22982", "22986"],
-        "auth": "123",
+        "method": "user.login",
+        "params": {"user": "mylogin", "password": "mypass"},
         "id": 0,
     }
 
-    # Check response
-    assert set(result["itemids"]) == {"22982", "22986"}
+    # Check login
+    assert zapi.auth == "0424bd59b807674191e7d77572075f33"
 
 
-@httpretty.activate
-def test_login_with_context():
-    httpretty.register_uri(
-        httpretty.POST,
-        "http://example.com/api_jsonrpc.php",
-        body=json.dumps(
-            {
-                "jsonrpc": "2.0",
-                "result": "0424bd59b807674191e7d77572075f33",
-                "id": 0,
-            }
-        ),
+def test_login_with_context(requests_mock):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "result": "0424bd59b807674191e7d77572075f33",
+            "id": 0,
+        },
     )
 
     with ZabbixAPI("http://example.com", detect_version=False) as zapi:
@@ -146,32 +69,154 @@ def test_login_with_context():
         assert zapi.auth == "0424bd59b807674191e7d77572075f33"
 
 
-@httpretty.activate
-def test_detecting_version():
-    httpretty.register_uri(
-        httpretty.POST,
-        "http://example.com/api_jsonrpc.php",
-        body=json.dumps(
-            {
-                "jsonrpc": "2.0",
-                "result": "4.0.0",
-                "id": 0,
-            }
-        ),
+def test_attr_syntax_kwargs(requests_mock):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "result": [{"hostid": 1234}],
+            "id": 0,
+        },
     )
 
-    zapi_detect = ZabbixAPI("http://example.com")
-    assert zapi_detect.api_version() == "4.0.0"
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.auth = "some_auth_key"
+    result = zapi.host.get(hostids=5)
+
+    # Check request
+    assert requests_mock.last_request.json() == {
+        "jsonrpc": "2.0",
+        "method": "host.get",
+        "params": {"hostids": 5},
+        "auth": "some_auth_key",
+        "id": 0,
+    }
+
+    # Check response
+    assert result == [{"hostid": 1234}]
 
 
-@httpretty.activate
-def test_empty_response():
-    httpretty.register_uri(
-        httpretty.POST,
-        "http://example.com/api_jsonrpc.php",
-        body="",
+def test_attr_syntax_args(requests_mock):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "result": {"itemids": ["22982", "22986"]},
+            "id": 0,
+        },
+    )
+
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.auth = "some_auth_key"
+    result = zapi.host.delete("22982", "22986")
+
+    # Check request
+    assert requests_mock.last_request.json() == {
+        "jsonrpc": "2.0",
+        "method": "host.delete",
+        "params": ["22982", "22986"],
+        "auth": "some_auth_key",
+        "id": 0,
+    }
+
+    # Check response
+    assert result == {"itemids": ["22982", "22986"]}
+
+
+def test_attr_syntax_args_and_kwargs_raises():
+    with pytest.raises(
+        TypeError,
+        match="Found both args and kwargs",
+    ):
+        zapi = ZabbixAPI("http://example.com")
+        zapi.host.delete("22982", hostids=5)
+
+
+def test_detecting_version(requests_mock):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "result": "4.0.0",
+            "id": 0,
+        },
     )
 
     zapi = ZabbixAPI("http://example.com")
+    assert zapi.api_version() == "4.0.0"
+
+
+@pytest.mark.parametrize(
+    "data",
+    [
+        (None),
+        ('No groups for host "Linux server".'),
+    ],
+)
+def test_error_response(requests_mock, data):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "error": {
+                "code": -32602,
+                "message": "Invalid params.",
+                **({} if data is None else {"data": data}),
+            },
+            "id": 0,
+        },
+    )
+
+    with pytest.raises(
+        ZabbixAPIException,
+        match="Error -32602: Invalid params., No data."
+        if data is None
+        else f"Error -32602: Invalid params., {data}",
+    ):
+        zapi = ZabbixAPI("http://example.com")
+        zapi.host.get()
+
+
+def test_empty_response(requests_mock):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response=None,
+        body="",
+    )
+
     with pytest.raises(ZabbixAPIException, match="Received empty response"):
+        zapi = ZabbixAPI("http://example.com")
         zapi.login("mylogin", "mypass")
+
+
+@pytest.mark.parametrize(
+    "obj, method, params, expected",
+    [
+        ("host", "get", {}, [{"hostid": 1234}]),
+    ],
+)
+def test_calls(requests_mock, obj, method, params, expected):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        response={
+            "jsonrpc": "2.0",
+            "result": expected,
+            "id": 0,
+        },
+    )
+
+    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.auth = "some_auth_key"
+    result = zapi[obj][method](**params)
+
+    # Check request
+    assert requests_mock.last_request.json() == {
+        "jsonrpc": "2.0",
+        "method": f"{obj}.{method}",
+        "params": params,
+        "auth": "some_auth_key",
+        "id": 0,
+    }
+
+    # Check response
+    assert result == expected

@@ -38,14 +38,14 @@ setup(
     extras_require={
         "dev": [
             "black",
-            "httpretty<0.8.7",
             "isort",
             "mypy",
-            "types-requests",
             "pylint",
             "pytest-cov",
             "pytest-xdist",
             "pytest",
+            "requests-mock",
+            "types-requests",
         ],
     },
 )
