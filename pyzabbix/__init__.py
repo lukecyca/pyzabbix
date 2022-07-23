@@ -2,9 +2,9 @@ import logging
 from typing import Mapping, Optional, Sequence, Tuple, Union
 from warnings import warn
 
-import semantic_version  # type: ignore
 from requests import Session
 from requests.exceptions import JSONDecodeError
+from semantic_version import Version  # type: ignore
 
 
 class _NullHandler(logging.Handler):
@@ -114,8 +114,8 @@ class ZabbixAPI:
         """
 
         if self._detect_version:
-            self.version = semantic_version.Version(self.api_version())
-            logger.info("Zabbix API version is: %s", str(self.version))
+            self.version = Version(self.api_version())
+            logger.info(f"Zabbix API version is: {self.version}")
 
         # If the API token is explicitly provided, use this instead.
         if api_token is not None:
@@ -128,7 +128,7 @@ class ZabbixAPI:
         self.auth = ""
         if self.use_authenticate:
             self.auth = self.user.authenticate(user=user, password=password)
-        elif self.version and self.version >= semantic_version.Version("5.4.0"):
+        elif self.version and self.version >= Version("5.4.0"):
             self.auth = self.user.login(username=user, password=password)
         else:
             self.auth = self.user.login(user=user, password=password)
