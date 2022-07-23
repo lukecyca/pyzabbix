@@ -1,10 +1,11 @@
 import logging
-from typing import Mapping, Optional, Sequence, Tuple, Union
+from typing import Any, Mapping, Optional, Sequence, Tuple, Union
 from warnings import warn
 
 from requests import Session
 from requests.exceptions import JSONDecodeError
 from semantic_version import Version  # type: ignore
+from typing_extensions import NotRequired, TypedDict
 
 
 class _NullHandler(logging.Handler):
@@ -35,6 +36,27 @@ class ZabbixAPIException(Exception):
         super().__init__(*args)
 
         self.error = kwargs.get("error", None)
+
+
+class ZabbixAPIRequest(TypedDict):
+    jsonrpc: str
+    method: str
+    params: Union[Sequence, Mapping]
+    auth: NotRequired[str]
+    id: int
+
+
+class Error(TypedDict):
+    code: int
+    message: str
+    data: NotRequired[str]
+
+
+class ZabbixAPIResponse(TypedDict):
+    jsonrpc: str
+    result: Any
+    error: NotRequired[Error]
+    id: int
 
 
 # pylint: disable=too-many-instance-attributes
@@ -184,8 +206,8 @@ class ZabbixAPI:
         self,
         method: str,
         params: Optional[Union[Mapping, Sequence]] = None,
-    ) -> dict:
-        payload = {
+    ) -> ZabbixAPIResponse:
+        payload: ZabbixAPIRequest = {
             "jsonrpc": "2.0",
             "method": method,
             "params": params or {},
@@ -213,7 +235,7 @@ class ZabbixAPI:
             raise ZabbixAPIException("Received empty response")
 
         try:
-            response = resp.json()
+            response: ZabbixAPIResponse = resp.json()
         except JSONDecodeError as exception:
             raise ZabbixAPIException(
                 f"Unable to parse json: {resp.text}"
