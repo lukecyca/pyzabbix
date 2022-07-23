@@ -15,7 +15,7 @@ def wait_for_zabbix() -> None:
     max_attempts = 30
     while max_attempts > 0:
         try:
-            ZabbixAPI(ZABBIX_SERVER).apiinfo.version()
+            ZabbixAPI(ZABBIX_SERVER).login("Admin", "zabbix")
         except (ConnectionError, ZabbixAPIException):
             sleep(2)
             max_attempts -= 1
