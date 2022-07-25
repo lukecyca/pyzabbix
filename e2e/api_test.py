@@ -1,4 +1,4 @@
-from pyzabbix import ZabbixAPI
+from pyzabbix.api import ZabbixAPI
 
 from .conftest import ZABBIX_VERSION
 
