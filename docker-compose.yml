@@ -18,6 +18,7 @@ services:
     environment:
       POSTGRES_USER: zabbix
       POSTGRES_PASSWORD: zabbix
+      ZBX_CACHEUPDATEFREQUENCY: 1
     depends_on:
       - postgres-server
 
