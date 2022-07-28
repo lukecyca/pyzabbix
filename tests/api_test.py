@@ -16,7 +16,7 @@ def test_server_url_correction(server, expected):
     assert ZabbixAPI(server).url == expected
 
 
-def _zabbix_requests_mock_factory(requests_mock, response, **kwargs):
+def _zabbix_requests_mock_factory(requests_mock, *args, **kwargs):
     requests_mock.post(
         "http://example.com/api_jsonrpc.php",
         request_headers={
@@ -24,7 +24,7 @@ def _zabbix_requests_mock_factory(requests_mock, response, **kwargs):
             "User-Agent": "python/pyzabbix",
             "Cache-Control": "no-cache",
         },
-        json=response,
+        *args,
         **kwargs,
     )
 
@@ -32,7 +32,7 @@ def _zabbix_requests_mock_factory(requests_mock, response, **kwargs):
 def test_login(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "result": "0424bd59b807674191e7d77572075f33",
             "id": 0,
@@ -57,7 +57,7 @@ def test_login(requests_mock):
 def test_login_with_context(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "result": "0424bd59b807674191e7d77572075f33",
             "id": 0,
@@ -72,7 +72,7 @@ def test_login_with_context(requests_mock):
 def test_attr_syntax_kwargs(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "result": [{"hostid": 1234}],
             "id": 0,
@@ -99,7 +99,7 @@ def test_attr_syntax_kwargs(requests_mock):
 def test_attr_syntax_args(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "result": {"itemids": ["22982", "22986"]},
             "id": 0,
@@ -135,7 +135,7 @@ def test_attr_syntax_args_and_kwargs_raises():
 def test_detecting_version(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "result": "4.0.0",
             "id": 0,
@@ -156,7 +156,7 @@ def test_detecting_version(requests_mock):
 def test_error_response(requests_mock, data):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "error": {
                 "code": -32602,
@@ -180,7 +180,6 @@ def test_error_response(requests_mock, data):
 def test_empty_response(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response=None,
         body="",
     )
 
@@ -198,7 +197,7 @@ def test_empty_response(requests_mock):
 def test_calls(requests_mock, obj, method, params, expected):
     _zabbix_requests_mock_factory(
         requests_mock,
-        response={
+        json={
             "jsonrpc": "2.0",
             "result": expected,
             "id": 0,
