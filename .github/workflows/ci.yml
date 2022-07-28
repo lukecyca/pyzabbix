@@ -65,6 +65,7 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         zabbix-version: ["4.0", "5.0", "6.0", "6.2"]
 
