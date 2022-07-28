@@ -69,6 +69,40 @@ def test_login_with_context(requests_mock):
         assert zapi.auth == "0424bd59b807674191e7d77572075f33"
 
 
+@pytest.mark.parametrize(
+    "version",
+    [
+        ("4.0.0"),
+        ("5.4.0"),
+        ("6.2.0"),
+    ],
+)
+def test_login_with_version_detect(requests_mock, version):
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        [
+            {
+                "json": {
+                    "jsonrpc": "2.0",
+                    "result": version,
+                    "id": 0,
+                }
+            },
+            {
+                "json": {
+                    "jsonrpc": "2.0",
+                    "result": "0424bd59b807674191e7d77572075f33",
+                    "id": 0,
+                }
+            },
+        ],
+    )
+
+    with ZabbixAPI("http://example.com") as zapi:
+        zapi.login("mylogin", "mypass")
+        assert zapi.auth == "0424bd59b807674191e7d77572075f33"
+
+
 def test_attr_syntax_kwargs(requests_mock):
     _zabbix_requests_mock_factory(
         requests_mock,
