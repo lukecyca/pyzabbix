@@ -8,6 +8,14 @@ from packaging.version import Version
 from requests import Session
 from requests.exceptions import JSONDecodeError
 
+__all__ = [
+    "ZabbixAPI",
+    "ZabbixAPIException",
+    "ZabbixAPIMethod",
+    "ZabbixAPIObject",
+    "ZabbixAPIObjectClass",
+]
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 

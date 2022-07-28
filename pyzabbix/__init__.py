@@ -1,4 +1,4 @@
-from ._api import (
+from .api import (
     ZabbixAPI,
     ZabbixAPIException,
     ZabbixAPIMethod,
