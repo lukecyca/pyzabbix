@@ -1,3 +1,15 @@
+<a name="1.2.0"></a>
+
+## [1.2.0](https://github.com/lukecyca/pyzabbix/compare/1.1.0...1.2.0) (2022-08-04)
+
+### :bug: Bug Fixes
+
+- catch ValueError during json parsing
+
+### :rocket: Features
+
+- parse version using packaging.version
+
 <a name="1.1.0"></a>
 
 ## [1.1.0](https://github.com/lukecyca/pyzabbix/compare/1.0.0...1.1.0) (2022-07-28)
