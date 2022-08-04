@@ -6,7 +6,6 @@ from warnings import warn
 
 from packaging.version import Version
 from requests import Session
-from requests.exceptions import JSONDecodeError
 
 __all__ = [
     "ZabbixAPI",
@@ -218,7 +217,7 @@ class ZabbixAPI:
 
         try:
             response = resp.json()
-        except JSONDecodeError as exception:
+        except ValueError as exception:
             raise ZabbixAPIException(
                 f"Unable to parse json: {resp.text}"
             ) from exception
