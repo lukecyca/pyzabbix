@@ -1,3 +1,11 @@
+<a name="1.2.1"></a>
+
+## [1.2.1](https://github.com/lukecyca/pyzabbix/compare/1.2.0...1.2.1) (2022-08-25)
+
+### :bug: Bug Fixes
+
+- improve deprecation message for confimport
+
 <a name="1.2.0"></a>
 
 ## [1.2.0](https://github.com/lukecyca/pyzabbix/compare/1.1.0...1.2.0) (2022-08-04)
