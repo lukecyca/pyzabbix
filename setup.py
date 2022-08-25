@@ -5,7 +5,7 @@ with open("README.md", encoding="utf-8") as fh:
 
 setup(
     name="pyzabbix",
-    version="1.2.0",
+    version="1.2.1",
     description="Zabbix API Python interface",
     long_description=long_description,
     long_description_content_type="text/markdown",
