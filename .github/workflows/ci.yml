@@ -112,6 +112,7 @@ jobs:
 
       - run: make clean build
 
-      - uses: pypa/gh-action-pypi-publish@v1.5.0
+      - if: github.repository_owner == 'lukecyca'
+        uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
