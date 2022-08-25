@@ -168,8 +168,8 @@ class ZabbixAPI:
         :param confformat:
         """
         warn(
-            "ZabbixAPI.confimport() has been deprecated, please use "
-            "ZabbixAPI.configuration['import']() instead",
+            "ZabbixAPI.confimport(format, source, rules) has been deprecated, please use "
+            "ZabbixAPI.configuration['import'](format=format, source=source, rules=rules) instead",
             DeprecationWarning,
             2,
         )
