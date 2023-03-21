@@ -67,7 +67,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        zabbix-version: ["4.0", "5.0", "6.0", "6.2"]
+        zabbix-version: ["4.0", "5.0", "6.0", "6.4"]
 
     env:
       ZABBIX_VERSION: ${{ matrix.zabbix-version }}
