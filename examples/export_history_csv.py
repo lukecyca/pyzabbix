@@ -109,7 +109,6 @@ def assignTimeRange(inputParameters, datetime1, datetime2):
 def fetch_to_csv(
     username, password, server, hostname, key, output, datetime1, datetime2, debuglevel
 ):
-
     print("login to zabbix server %s" % server)
     zapi = ZabbixAPI(server + "/zabbix")
     login(zapi, username, password)
