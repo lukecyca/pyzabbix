@@ -22,7 +22,7 @@ lint: $(VENV)
 	$(VENV)/bin/black . --check
 	$(VENV)/bin/isort . --profile black --check
 	$(VENV)/bin/pylint --jobs=$(CPU_CORES) --output-format=colorized pyzabbix tests
-	$(VENV)/bin/mypy pyzabbix tests || true
+	$(VENV)/bin/mypy pyzabbix tests
 
 
 PYTEST_CMD = $(VENV)/bin/pytest -v \
