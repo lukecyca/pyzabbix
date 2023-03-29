@@ -18,6 +18,8 @@ __all__ = [
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
+ZABBIX_5_4_0 = Version("5.4.0")
+
 
 class ZabbixAPIException(Exception):
     """Generic Zabbix API exception
@@ -131,7 +133,7 @@ class ZabbixAPI:
         self.auth = ""
         if self.use_authenticate:
             self.auth = self.user.authenticate(user=user, password=password)
-        elif self.version and self.version >= Version("5.4.0"):
+        elif self.version and self.version >= ZABBIX_5_4_0:
             self.auth = self.user.login(username=user, password=password)
         else:
             self.auth = self.user.login(user=user, password=password)
