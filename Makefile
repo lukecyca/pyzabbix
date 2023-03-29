@@ -16,11 +16,11 @@ install: $(VENV)
 
 format: $(VENV)
 	$(VENV)/bin/black .
-	$(VENV)/bin/isort . --profile black
+	$(VENV)/bin/isort .
 
 lint: $(VENV)
 	$(VENV)/bin/black . --check
-	$(VENV)/bin/isort . --profile black --check
+	$(VENV)/bin/isort . --check
 	$(VENV)/bin/pylint --jobs=$(CPU_CORES) --output-format=colorized pyzabbix tests
 	$(VENV)/bin/mypy pyzabbix tests
 

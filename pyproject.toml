@@ -1,3 +1,7 @@
+[tool.isort]
+profile = "black"
+combine_as_imports = true
+
 [tool.pylint.messages_control]
 disable = [
   "missing-class-docstring",
