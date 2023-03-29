@@ -10,17 +10,14 @@ disable = "logging-fstring-interpolation"
 
 [tool.mypy]
 allow_redefinition = true
-disallow_incomplete_defs= true
+disallow_incomplete_defs = true
 
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "DEBUG"
 
 [tool.coverage.run]
-omit = [
-  "tests/*",
-  "e2e/*",
-]
+omit = ["tests/*", "e2e/*"]
 
 [build-system]
 requires = ["setuptools", "wheel"]
