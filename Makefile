@@ -3,7 +3,7 @@ all: lint test
 .DEFAULT_GOAL: install
 
 SHELL = bash
-CPU_CORES = $(shell nproc)
+CPU_CORES = $(shell N=$$(nproc); echo $$(( $$N > 4 ? 4 : $$N )))
 
 VENV = .venv
 $(VENV):
