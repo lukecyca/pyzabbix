@@ -47,5 +47,11 @@ build: $(VENV)
 release:
 	./scripts/release.sh
 
+changelog:
+	git-chglog --output CHANGELOG.md 1.1.0..
+	if command -v npx > /dev/null; then npx prettier --write CHANGELOG.md; fi
+	git add CHANGELOG.md
+	git commit -m "docs: regenerate changelog"
+
 clean:
 	rm -Rf $(VENV) dist

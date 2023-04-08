@@ -1,0 +1,23 @@
+style: github
+template: CHANGELOG.md.tpl
+info:
+  title: CHANGELOG
+  repository_url: https://github.com/lukecyca/pyzabbix
+options:
+  commits:
+    filters:
+      Type:
+        - feat
+        - fix
+  commit_groups:
+    title_maps:
+      feat: ":rocket: Features"
+      fix: ":bug: Bug Fixes"
+  header:
+    pattern: "^(\\w*)\\:\\s(.*)$"
+    pattern_maps:
+      - Type
+      - Subject
+  notes:
+    keywords:
+      - BREAKING CHANGE
