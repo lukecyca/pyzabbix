@@ -1,3 +1,11 @@
+<a name="1.3.0"></a>
+
+## [1.3.0](https://github.com/lukecyca/pyzabbix/compare/1.2.1...1.3.0) (2023-04-08)
+
+### :rocket: Features
+
+- add zabbix 6.4 header authentication
+
 <a name="1.2.1"></a>
 
 ## [1.2.1](https://github.com/lukecyca/pyzabbix/compare/1.2.0...1.2.1) (2022-08-25)
