@@ -199,11 +199,11 @@ class ZabbixAPI:
 
         # We don't have to pass the auth token if asking for
         # the apiinfo.version or user.checkAuthentication
-        if (
-            self.auth
-            and method != "apiinfo.version"
-            and method != "user.checkAuthentication"
-        ):
+        anonymous_methods = {
+            "apiinfo.version",
+            "user.checkAuthentication",
+        }
+        if self.auth and method not in anonymous_methods:
             payload["auth"] = self.auth
 
         logger.debug(f"Sending: {payload}")
