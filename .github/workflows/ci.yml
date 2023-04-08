@@ -119,3 +119,10 @@ jobs:
         uses: pypa/gh-action-pypi-publish@v1.5.0
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
+
+      - if: github.repository_owner == 'lukecyca'
+        uses: softprops/action-gh-release@v1
+        with:
+          draft: true
+          body: |
+            Please see [CHANGELOG.md](https://github.com/lukecyca/pyzabbix/blob/master/CHANGELOG.md)
