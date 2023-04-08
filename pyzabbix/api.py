@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 ZABBIX_5_4_0 = Version("5.4.0")
+ZABBIX_6_4_0 = Version("6.4.0")
 
 
 class ZabbixAPIException(Exception):
@@ -196,18 +197,28 @@ class ZabbixAPI:
             "params": params or {},
             "id": self.id,
         }
+        headers = {}
 
         # We don't have to pass the auth token if asking for
         # the apiinfo.version or user.checkAuthentication
         anonymous_methods = {
             "apiinfo.version",
             "user.checkAuthentication",
+            "user.login",
         }
         if self.auth and method not in anonymous_methods:
-            payload["auth"] = self.auth
+            if self.version and self.version >= ZABBIX_6_4_0:
+                headers["Authorization"] = f"Bearer {self.auth}"
+            else:
+                payload["auth"] = self.auth
 
         logger.debug(f"Sending: {payload}")
-        resp = self.session.post(self.url, json=payload, timeout=self.timeout)
+        resp = self.session.post(
+            self.url,
+            json=payload,
+            headers=headers,
+            timeout=self.timeout,
+        )
         logger.debug(f"Response Code: {resp.status_code}")
 
         # NOTE: Getting a 412 response code means the headers are not in the

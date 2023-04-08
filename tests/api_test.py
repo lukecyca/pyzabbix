@@ -268,7 +268,6 @@ def test_do_request(requests_mock, version):
         "jsonrpc": "2.0",
         "method": "host.get",
         "params": {},
-        "auth": "some_auth_key",
         "id": 0,
     }
     expect_headers = {
@@ -276,6 +275,11 @@ def test_do_request(requests_mock, version):
         "Content-Type": "application/json-rpc",
         "User-Agent": "python/pyzabbix",
     }
+
+    if zapi.version < Version("6.4.0"):
+        expect_json["auth"] = "some_auth_key"
+    else:
+        expect_headers["Authorization"] = "Bearer some_auth_key"
 
     assert found.json() == expect_json
     assert found.headers.items() >= expect_headers.items()
