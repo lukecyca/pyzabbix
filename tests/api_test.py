@@ -1,4 +1,5 @@
 import pytest
+from packaging.version import Version
 
 from pyzabbix import ZabbixAPI, ZabbixAPIException
 
@@ -236,33 +237,45 @@ def test_empty_response(requests_mock):
 
 
 @pytest.mark.parametrize(
-    "obj, method, params, expected",
+    "version",
     [
-        ("host", "get", {}, [{"hostid": 1234}]),
+        ("4.0.0"),
+        ("5.4.0"),
+        ("6.2.0"),
     ],
 )
-def test_calls(requests_mock, obj, method, params, expected):
+def test_do_request(requests_mock, version):
     _zabbix_requests_mock_factory(
         requests_mock,
         json={
             "jsonrpc": "2.0",
-            "result": expected,
+            "result": [{"hostid": 1234}],
             "id": 0,
         },
     )
 
     zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi.version = Version(version)
     zapi.auth = "some_auth_key"
-    result = zapi[obj][method](**params)
+    result = zapi["host"]["get"]()
+
+    # Check response
+    assert result == [{"hostid": 1234}]
 
     # Check request
-    assert requests_mock.last_request.json() == {
+    found = requests_mock.last_request
+    expect_json = {
         "jsonrpc": "2.0",
-        "method": f"{obj}.{method}",
-        "params": params,
+        "method": "host.get",
+        "params": {},
         "auth": "some_auth_key",
         "id": 0,
     }
+    expect_headers = {
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json-rpc",
+        "User-Agent": "python/pyzabbix",
+    }
 
-    # Check response
-    assert result == expected
+    assert found.json() == expect_json
+    assert found.headers.items() >= expect_headers.items()
