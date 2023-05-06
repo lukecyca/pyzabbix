@@ -85,7 +85,7 @@ class ZabbixAPI:
         if not server.endswith("/api_jsonrpc.php"):
             server = server.rstrip("/") + "/api_jsonrpc.php"
         self.url = server
-        logger.info(f"JSON-RPC Server Endpoint: {self.url}")
+        logger.info("JSON-RPC Server Endpoint: %s", self.url)
 
         self.version: Optional[Version] = None
         self._detect_version = detect_version
@@ -121,7 +121,7 @@ class ZabbixAPI:
 
         if self._detect_version:
             self.version = Version(self.api_version())
-            logger.info(f"Zabbix API version is: {self.version}")
+            logger.info("Zabbix API version is: %s", self.version)
 
         # If the API token is explicitly provided, use this instead.
         if api_token is not None:
@@ -212,14 +212,14 @@ class ZabbixAPI:
             else:
                 payload["auth"] = self.auth
 
-        logger.debug(f"Sending: {payload}")
+        logger.debug("Sending: %s", payload)
         resp = self.session.post(
             self.url,
             json=payload,
             headers=headers,
             timeout=self.timeout,
         )
-        logger.debug(f"Response Code: {resp.status_code}")
+        logger.debug("Response Code: %s", resp.status_code)
 
         # NOTE: Getting a 412 response code means the headers are not in the
         # list of allowed headers.
@@ -235,7 +235,7 @@ class ZabbixAPI:
                 f"Unable to parse json: {resp.text}"
             ) from exception
 
-        logger.debug(f"Response Body: {response}")
+        logger.debug("Response Body: %s", response)
 
         self.id += 1
 
