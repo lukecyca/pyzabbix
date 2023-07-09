@@ -24,13 +24,13 @@ repos:
       - id: name-tests-test
 
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+    rev: v3.0.0
     hooks:
       - id: prettier
         files: \.(md|yml|yaml|json)$
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.4
+    rev: v2.2.5
     hooks:
       - id: codespell
         exclude: ^examples/additemcsv.py$
@@ -41,12 +41,12 @@ repos:
       - id: isort
 
   - repo: https://github.com/psf/black
-    rev: 23.3.0
+    rev: 23.7.0
     hooks:
       - id: black
 
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.3.2
+    rev: v3.9.0
     hooks:
       - id: pyupgrade
         args: [--py3-plus, --py36-plus]
