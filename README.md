@@ -13,7 +13,7 @@
 ## Documentation
 
 > [!NOTE]
-> If you are looking for a `Zabbix Sender`, please use the [`zappix` library](https://pypi.org/project/zappix) (https://gitlab.com/szuro/zappix).
+> If you are looking for a `Zabbix Sender`, please use the [`zappix` library](https://pypi.org/project/zappix).
 
 ### Getting Started
 
