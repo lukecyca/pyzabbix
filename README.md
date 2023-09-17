@@ -12,6 +12,9 @@
 
 ## Documentation
 
+> [!NOTE]  
+> If you are looking for a `Zabbix Sender`, please use this library https://gitlab.com/szuro/zappix
+
 ### Getting Started
 
 Install PyZabbix using pip:
