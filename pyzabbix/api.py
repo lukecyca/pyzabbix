@@ -51,14 +51,14 @@ class ZabbixAPI:
         server: str = "http://localhost/zabbix",
         session: Optional[Session] = None,
         use_authenticate: bool = False,
-        timeout: Optional[Union[float, int, Tuple[int, int]]] = None,
+        timeout: Optional[Union[float, int, Tuple[int, int]]] = 30,
         detect_version: bool = True,
     ):
         """
         :param server: Base URI for zabbix web interface (omitting /api_jsonrpc.php)
         :param session: optional pre-configured requests.Session instance
         :param use_authenticate: Use old (Zabbix 1.8) style authentication
-        :param timeout: optional connect and read timeout in seconds, default: None
+        :param timeout: optional connect and read timeout in seconds, default: 30
                         If you're using Requests >= 2.4 you can set it as
                         tuple: "(connect, read)" which is used to set individual
                         connect and read timeouts.
