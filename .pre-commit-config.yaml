@@ -28,6 +28,7 @@ repos:
     hooks:
       - id: prettier
         files: \.(md|yml|yaml|json)$
+        exclude: (\.github/release-please-manifest\.json|CHANGELOG\.md)$
 
   - repo: https://github.com/codespell-project/codespell
     rev: v2.2.5

@@ -1,3 +1,5 @@
+# Changelog
+
 <a name="1.3.0"></a>
 
 ## [1.3.0](https://github.com/lukecyca/pyzabbix/compare/1.2.1...1.3.0) (2023-04-08)
