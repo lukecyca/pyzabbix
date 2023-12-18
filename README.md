@@ -128,20 +128,6 @@ make install
 source .venv/bin/activate
 ```
 
-### Releases
-
-To release a new version, first bump the version number in `setup.py` by hand and run the release target:
-
-```sh
-make release
-```
-
-Finally, push the release commit and tag to publish them to Pypi:
-
-```sh
-git push --follow-tags
-```
-
 ## License
 
 LGPL 2.1 http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
