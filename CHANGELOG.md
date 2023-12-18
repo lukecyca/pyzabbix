@@ -1,7 +1,5 @@
 # Changelog
 
-<a name="1.3.0"></a>
-
 ## [1.3.1](https://github.com/lukecyca/pyzabbix/compare/1.3.0...v1.3.1) (2023-12-18)
 
 
@@ -9,6 +7,8 @@
 
 * add link to the zappix project ([#217](https://github.com/lukecyca/pyzabbix/issues/217)) ([962693d](https://github.com/lukecyca/pyzabbix/commit/962693d88a7cb3c53aeb0b7d62fc7198921abca8))
 * regenerate changelog ([8747c18](https://github.com/lukecyca/pyzabbix/commit/8747c185503a74282df2b66d07ccb8f58a114d86))
+
+<a name="1.3.0"></a>
 
 ## [1.3.0](https://github.com/lukecyca/pyzabbix/compare/1.2.1...1.3.0) (2023-04-08)
 
