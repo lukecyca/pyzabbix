@@ -5,3 +5,4 @@ from .api import (
     ZabbixAPIObject,
     ZabbixAPIObjectClass,
 )
+from .sender import ZabbixMetric, ZabbixSender, ZabbixResponse
