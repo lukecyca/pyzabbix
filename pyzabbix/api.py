@@ -1,4 +1,4 @@
-# pylint: disable=wrong-import-order
+# pylint: disable=wrong-import-order,line-too-long
 
 import logging
 from typing import Mapping, Optional, Sequence, Tuple, Union
@@ -23,18 +23,19 @@ ZABBIX_6_4_0 = Version("6.4.0")
 
 
 class ZabbixAPIException(Exception):
-    """Generic Zabbix API exception
+    """Zabbix API Exception
 
-    Codes:
-      -32700: invalid JSON. An error occurred on the server while
-              parsing the JSON text (typo, wrong quotes, etc.)
-      -32600: received JSON is not a valid JSON-RPC Request
-      -32601: requested remote-procedure does not exist
-      -32602: invalid method parameters
-      -32603: Internal JSON-RPC error
-      -32400: System error
-      -32300: Transport error
-      -32500: Application error
+    Codes are based on the [jsonrpc specification](https://www.jsonrpc.org/specification#error_object).
+
+    - `-32700` `Parse error`: Invalid JSON was received by the server.
+    - `-32600` `Invalid Request`: The JSON sent is not a valid Request object.
+    - `-32601` `Method not found`: The method does not exist / is not available.
+    - `-32602` `Invalid params`: Invalid method parameter(s).
+    - `-32603` `Internal error`: Internal JSON-RPC error.
+    - `-32000` to `-32099` `Server error`: Reserved for implementation-defined server-errors.
+    - `-32400` `System error`
+    - `-32300` `Transport error`
+    - `-32500` `Application error`
     """
 
     def __init__(self, *args, **kwargs):

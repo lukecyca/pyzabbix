@@ -41,6 +41,16 @@ test: $(VENV)
 e2e: $(VENV)
 	$(PYTEST_CMD) e2e
 
+.PHONY: docs
+docs: $(VENV)
+	source $(VENV)/bin/activate
+	pdoc3 --html --force --output-dir docs pyzabbix
+
+.PHONY: docs
+docs-watch: $(VENV)
+	source $(VENV)/bin/activate
+	pdoc3 --http :8081 pyzabbix
+
 build: $(VENV)
 	$(VENV)/bin/python -m build .
 

@@ -42,6 +42,7 @@ setup(
             "black",
             "isort",
             "mypy",
+            "pdoc3",
             "pylint",
             "pytest-cov",
             "pytest-xdist",
