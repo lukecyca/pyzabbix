@@ -1,7 +1,8 @@
 # pylint: disable=wrong-import-order
 
 import logging
-from typing import Mapping, Optional, Sequence, Tuple, Union
+from collections.abc import Mapping, Sequence
+from typing import Optional, Union
 from warnings import warn
 
 from packaging.version import Version
@@ -51,7 +52,7 @@ class ZabbixAPI:
         server: str = "http://localhost/zabbix",
         session: Optional[Session] = None,
         use_authenticate: bool = False,
-        timeout: Optional[Union[float, int, Tuple[int, int]]] = None,
+        timeout: Optional[Union[float, int, tuple[int, int]]] = None,
         detect_version: bool = True,
     ):
         """
