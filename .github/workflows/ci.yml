@@ -89,8 +89,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - run: docker-compose up -d
-      - run: docker-compose images
+      - run: docker compose up -d
+      - run: docker compose images
       - run: make install
       - run: make e2e
 
