@@ -43,8 +43,9 @@ jobs:
       - run: make lint
 
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
 
@@ -89,8 +90,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - run: docker-compose up -d
-      - run: docker-compose images
+      - run: docker compose up -d
+      - run: docker compose images
       - run: make install
       - run: make e2e
 
