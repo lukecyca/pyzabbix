@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/lukecyca/pyzabbix/compare/1.3.1...1.4.0) (2025-07-26)
+
+
+### Features
+
+* drop support for python &lt; 3.9 ([#237](https://github.com/lukecyca/pyzabbix/issues/237)) ([f6c6ffe](https://github.com/lukecyca/pyzabbix/commit/f6c6ffe8e2e71de076f8e526bd9091146ca5c158))
+
 ## [1.3.1](https://github.com/lukecyca/pyzabbix/compare/1.3.0...v1.3.1) (2023-12-18)
 
 
