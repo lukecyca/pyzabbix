@@ -45,7 +45,7 @@ class ZabbixAPIException(Exception):
 
 # pylint: disable=too-many-instance-attributes
 class ZabbixAPI:
-    # pylint: disable=too-many-arguments
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     def __init__(
         self,
         server: str = "http://localhost/zabbix",

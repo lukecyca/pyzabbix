@@ -217,9 +217,11 @@ def test_error_response(requests_mock, data):
 
     with pytest.raises(
         ZabbixAPIException,
-        match="Error -32602: Invalid params., No data."
-        if data is None
-        else f"Error -32602: Invalid params., {data}",
+        match=(
+            "Error -32602: Invalid params., No data."
+            if data is None
+            else f"Error -32602: Invalid params., {data}"
+        ),
     ):
         zapi = ZabbixAPI("http://example.com")
         zapi.host.get()
