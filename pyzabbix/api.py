@@ -134,12 +134,17 @@ class ZabbixAPI:
         # request. Clear it before trying.
         self.auth = ""
         if self.use_authenticate:
-            self.auth = self.user.authenticate(user=user, password=password)
-        elif self.version and self.version >= ZABBIX_5_4_0:
-            self.auth = self.user.login(username=user, password=password)
+          logger.debug("Using legacy authentication with user=%s", user)
+          self.auth = self.user.authenticate(user=user, password=password)
         else:
+          if self.version and self.version < Version("5.4.0"):
+            logger.debug("Using user.login with user=%s for Zabbix < 5.4", user)
             self.auth = self.user.login(user=user, password=password)
+          else:
+            logger.debug("Using user.login with username=%s for Zabbix >= 5.4", user)
+            self.auth = self.user.login(username=user, password=password)
 
+            
     def check_authentication(self):
         if self.use_api_token:
             # We cannot use this call using an API Token

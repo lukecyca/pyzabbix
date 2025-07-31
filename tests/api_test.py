@@ -29,31 +29,93 @@ def _zabbix_requests_mock_factory(requests_mock, *args, **kwargs):
         **kwargs,
     )
 
-
-def test_login(requests_mock):
+@pytest.mark.parametrize(
+    "version, param_key",
+    [
+        ("4.0.0", "user"),
+        ("6.4.21", "username"),
+    ],
+)
+def test_login(requests_mock, version, param_key):
+    """Test user.login sends correct login parameter based on Zabbix version."""
     _zabbix_requests_mock_factory(
         requests_mock,
-        json={
-            "jsonrpc": "2.0",
-            "result": "0424bd59b807674191e7d77572075f33",
-            "id": 0,
-        },
+        [
+            {
+                "json": {
+                    "jsonrpc": "2.0",
+                    "result": version,
+                    "id": 0,
+                }
+            },
+            {
+                "json": {
+                    "jsonrpc": "2.0",
+                    "result": "0424bd59b807674191e7d77572075f33",
+                    "id": 1,
+                }
+            },
+        ],
     )
 
-    zapi = ZabbixAPI("http://example.com", detect_version=False)
+    zapi = ZabbixAPI("http://example.com")
     zapi.login("mylogin", "mypass")
 
     # Check request
-    assert requests_mock.last_request.json() == {
+    last_request = requests_mock.last_request.json()
+    assert last_request == {
         "jsonrpc": "2.0",
         "method": "user.login",
-        "params": {"user": "mylogin", "password": "mypass"},
-        "id": 0,
+        "params": {param_key: "mylogin", "password": "mypass"},
+        "id": 1,
     }
 
     # Check login
     assert zapi.auth == "0424bd59b807674191e7d77572075f33"
 
+@pytest.mark.parametrize(
+    "version, param_key",
+    [
+        ("4.0.0", "user"),
+        ("6.4.21", "username"),
+    ],
+)
+def test_login(requests_mock, version, param_key):
+    """Test user.login sends correct login parameter based on Zabbix version."""
+    _zabbix_requests_mock_factory(
+        requests_mock,
+        [
+            {
+                "json": {
+                    "jsonrpc": "2.0",
+                    "result": version,
+                    "id": 0,
+                }
+            },
+            {
+                "json": {
+                    "jsonrpc": "2.0",
+                    "result": "0424bd59b807674191e7d77572075f33",
+                    "id": 1,
+                }
+            },
+        ],
+    )
+
+    zapi = ZabbixAPI("http://example.com")
+    zapi.login("mylogin", "mypass")
+
+    # Check request
+    last_request = requests_mock.last_request.json()
+    assert last_request == {
+        "jsonrpc": "2.0",
+        "method": "user.login",
+        "params": {param_key: "mylogin", "password": "mypass"},
+        "id": 1,
+    }
+
+    # Check login
+    assert zapi.auth == "0424bd59b807674191e7d77572075f33"
 
 def test_login_with_context(requests_mock):
     _zabbix_requests_mock_factory(
@@ -285,3 +347,4 @@ def test_do_request(requests_mock, version):
 
     assert found.json() == expect_json
     assert found.headers.items() >= expect_headers.items()
+
